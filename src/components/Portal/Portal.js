@@ -22,8 +22,6 @@ class Portal extends Component {
                       <EditControl
                         position={'topleft'}
                       />
-                      {/*<Polygon positions={[[50.449219,-127.514648,],[52.426758,-127.514648,],[52.426758,-125.024414,],[50.449219,-125.024414,]]}/>*/}
-                      <SimpleGeoJSON data={{"type":"Feature","properties":{"source":"PCIC Climate Explorer"},"geometry":{"type":"Polygon","coordinates":[[[-127.514648,50.449219],[-127.514648,52.426758],[-125.024414,52.426758],[-125.024414,50.449219],[-127.514648,50.449219]]]}}}/>
                     </FeatureGroup>
                   </BCBaseMap>
                 </Col>
