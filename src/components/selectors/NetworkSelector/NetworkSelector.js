@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, ControlLabel } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
-import { map, flow, sortBy, tap } from 'lodash/fp';
-
+import { map, flow, filter, sortBy, tap } from 'lodash/fp';
+import chroma from 'chroma-js';
 import logger from '../../../logger';
-
 import './NetworkSelector.css';
 
 logger.configure({ active: true });
+
 
 class NetworkSelector extends Component {
   static propTypes = {
@@ -36,16 +36,37 @@ class NetworkSelector extends Component {
       )(networks)
   ));
 
+  static styles = {
+    option: (styles, { value, isDisabled }) => {
+      const color = chroma(value.color || '#000000');
+      return {
+        ...styles,
+        backgroundColor: isDisabled ? null : color.alpha(0.5).css(),
+      };
+    },
+    multiValue: (styles, { data: { value, isDisabled } }) => {
+      const color = chroma(value.color || '#000000');
+      return {
+        ...styles,
+        backgroundColor: isDisabled ? null : color.alpha(0.5).css(),
+      };
+    },
+  };
+
   handleClickAll = () =>
-    this.props.onChange(this.makeOptions(this.props.networks));
+    this.props.onChange(
+      filter(option => !option.isDisabled)
+        (this.makeOptions(this.props.networks))
+    );
 
   render() {
-
     return (
       <div>
+        <div><ControlLabel>Network</ControlLabel></div>
         <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
         <Select
           options={this.makeOptions(this.props.networks)}
+          styles={NetworkSelector.styles}
           placeholder={
             this.props.networks ? 'Select or type to search...' : 'Loading...'
           }
