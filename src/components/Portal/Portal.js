@@ -27,13 +27,13 @@ class Portal extends Component {
     networks: null,
     seletedNetworks: [],
     variables: null,
-    variable: null,
+    selectedVariables: [],
     stations: null,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
   handleChangeNetwork = this.handleChange.bind(this, 'seletedNetworks');
-  handleChangeVariable = this.handleChange.bind(this, 'variable');
+  handleChangeVariable = this.handleChange.bind(this, 'selectedVariables');
 
   componentDidMount() {
     getNetworks().then(response => this.setState({ networks: response.data }));
@@ -85,15 +85,15 @@ class Portal extends Component {
               onChange={this.handleChangeNetwork}
               isSearchable
             />
-            <JSONstringify object={this.state.seletedNetworks}/>
+            {/*<JSONstringify object={this.state.seletedNetworks}/>*/}
 
             <VariableSelector
               variables={this.state.variables}
-              value={this.state.variable}
+              value={this.state.selectedVariables}
               onChange={this.handleChangeVariable}
               isSearchable
             />
-            <JSONstringify object={this.state.variable}/>
+            <JSONstringify object={this.state.selectedVariables}/>
           </Row>
           <Row>
             Download

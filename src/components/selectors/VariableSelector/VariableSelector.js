@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Button, ControlLabel } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
 import {
   map,
   filter,
+  flatten,
   some,
   pick,
   includes,
@@ -117,7 +119,7 @@ class VariableSelector extends Component {
           label: group.by,
         })),
         sortBy('label'),
-        tap(options => console.log('ungrouped options', options)),
+        tap(options => console.log('ungrouped variable options', options)),
 
         // Group options by variable type: temp, precip, humidity, wind, misc.
         groupByGeneral(({ contexts }) => (
@@ -132,19 +134,51 @@ class VariableSelector extends Component {
         })),
         sortBy('order'),
 
-        tap(options => console.log('grouped options', options)),
+        tap(options => console.log('grouped variable options', options)),
       )(variables)
   ));
 
+  handleClickAll = () =>
+    this.props.onChange(
+      flow(
+        map(group => group.options),
+        flatten,
+        filter(option => !option.isDisabled),
+      )(this.makeOptions(this.props.variables))
+    );
+
+  makeHandleClickGroup = group =>
+    (() => this.props.onChange(group.options));
+
+  handleClickNone = () => this.props.onChange([]);
+
   render() {
+    const options = this.makeOptions(this.props.variables);
     return (
-      <Select
-        options={this.makeOptions(this.props.variables)}
-        placeholder={
-          this.props.variables ? 'Select or type to search...' : 'Loading...'
+      <div>
+        <div><ControlLabel>Variable</ControlLabel></div>
+        <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
+        {
+          map(group => (
+            <Button
+              key={group.label}
+              bsSize={'small'}
+              onClick={this.makeHandleClickGroup(group)}
+            >
+              {`All ${group.label}`}
+            </Button>
+          ))(options)
         }
-        {...this.props}
-      />
+        <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
+        <Select
+          options={options}
+          placeholder={
+            this.props.variables ? 'Select or type to search...' : 'Loading...'
+          }
+          {...this.props}
+          isMulti
+        />
+      </div>
     );
   }
 }
