@@ -17,20 +17,21 @@ import {
   getStations,
 } from '../../data-services/station-data-service';
 import VariableSelector from '../selectors/VariableSelector';
+import JSONstringify from '../util/JSONstringify';
 
 logger.configure({ active: true });
 
 class Portal extends Component {
   state = {
     networks: null,
-    network: null,
+    seletedNetworks: null,
     variables: null,
     variable: null,
     stations: null,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
-  handleChangeNetwork = this.handleChange.bind(this, 'network');
+  handleChangeNetwork = this.handleChange.bind(this, 'seletedNetworks');
   handleChangeVariable = this.handleChange.bind(this, 'variable');
 
   componentDidMount() {
@@ -62,11 +63,12 @@ class Portal extends Component {
           <Row className={'text-left'}>
             <NetworkSelector
               networks={this.state.networks}
-              value={this.state.network}
+              value={this.state.seletedNetworks}
               onChange={this.handleChangeNetwork}
+              isMulti
               isSearchable
             />
-            <div>Network: {this.state.network ? this.state.network.label : 'unselected'}</div>
+            <JSONstringify object={this.state.seletedNetworks}/>
 
             <VariableSelector
               variables={this.state.variables}
@@ -74,7 +76,7 @@ class Portal extends Component {
               onChange={this.handleChangeVariable}
               isSearchable
             />
-            <div>Variable: {this.state.variable ? this.state.variable.label : 'unselected'}</div>
+            <JSONstringify object={this.state.variable}/>
           </Row>
           <Row>
             Download
