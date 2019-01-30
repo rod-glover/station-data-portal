@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Select from 'react-select';
+import memoize from 'memoize-one';
 import {
   map,
   filter,
@@ -97,7 +98,8 @@ class VariableSelector extends Component {
     };
   };
 
-  static makeOptions = variables => (
+  // This function must be an instance property to be memoized correctly.
+  makeOptions = memoize(variables => (
     variables === null ?
       [] :
       flow(
@@ -132,12 +134,12 @@ class VariableSelector extends Component {
 
         tap(options => console.log('grouped options', options)),
       )(variables)
-  );
+  ));
 
   render() {
     return (
       <Select
-        options={VariableSelector.makeOptions(this.props.variables)}
+        options={this.makeOptions(this.props.variables)}
         placeholder={
           this.props.variables ? 'Select or type to search...' : 'Loading...'
         }

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Select from 'react-select';
+import memoize from 'memoize-one';
 import { map, flow, tap } from 'lodash/fp';
-import { getNetworks } from '../../../data-services/station-data-service';
 
 import logger from '../../../logger';
 
@@ -17,7 +17,8 @@ class NetworkSelector extends Component {
     onChange: PropTypes.func,
   };
 
-  static makeOptions = networks => (
+  // This function must be an instance property to be memoized correctly.
+  makeOptions = memoize(networks => (
     networks === null ?
       [] :
       flow(
@@ -25,19 +26,19 @@ class NetworkSelector extends Component {
         map(
           network => ({
             value: network,
-            label: `${network.name} — ${network.long_name}`,
+            label: `${network.name} – ${network.long_name}`,
             isDisabled: !network.publish,
           })
         ),
         tap(options => console.log('options', options)),
       )(networks)
-  );
+  ));
 
   render() {
 
     return (
       <Select
-        options={NetworkSelector.makeOptions(this.props.networks)}
+        options={this.makeOptions(this.props.networks)}
         placeholder={
           this.props.networks ? 'Select or type to search...' : 'Loading...'
         }
