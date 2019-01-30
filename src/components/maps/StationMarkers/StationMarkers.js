@@ -6,7 +6,6 @@ import { map, flow, tap } from 'lodash/fp';
 import logger from '../../../logger';
 
 import './StationMarkers.css';
-import { getStations } from '../../../data-services/station-data-service';
 import StationPopup from '../StationPopup';
 
 logger.configure({ active: true });
@@ -20,16 +19,9 @@ const stationMarkerOptions = {
 };
 
 class StationMarkers extends Component {
-  static propTypes = {};
-
-  state = {
-    stations: null,
+  static propTypes = {
+    stations: PropTypes.array,
   };
-
-  componentDidMount() {
-    getStations({ limit: null })
-    .then(response => this.setState({ stations: response.data }));
-  }
 
   static noStations = [];
 
@@ -50,7 +42,7 @@ class StationMarkers extends Component {
             <StationPopup station={station}/>
           </CircleMarker>
         )
-      )(this.state.stations || StationMarkers.noStations)
+      )(this.props.stations || StationMarkers.noStations)
     );
   }
 }

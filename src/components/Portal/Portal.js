@@ -11,7 +11,10 @@ import './Portal.css';
 import logger from '../../logger';
 import NetworkSelector from '../selectors/NetworkSelector';
 import StationMarkers from '../maps/StationMarkers';
-import { getNetworks } from '../../data-services/station-data-service';
+import {
+  getNetworks,
+  getStations
+} from '../../data-services/station-data-service';
 
 logger.configure({ active: true });
 
@@ -19,13 +22,16 @@ class Portal extends Component {
   state = {
     networks: null,
     network: null,
+    stations: null,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
   handleChangeNetwork = this.handleChange.bind(this, 'network');
 
   componentDidMount() {
-    getNetworks().then(response => this.setState({ networks: response.data }))
+    getNetworks().then(response => this.setState({ networks: response.data }));
+    getStations({ limit: 100 })
+    .then(response => this.setState({ stations: response.data }));
   }
 
   render() {
@@ -39,7 +45,9 @@ class Portal extends Component {
               />
             </FeatureGroup>
             <LayerGroup>
-              <StationMarkers/>
+              <StationMarkers
+                stations={this.state.stations}
+              />
             </LayerGroup>
           </BCBaseMap>
         </Col>
