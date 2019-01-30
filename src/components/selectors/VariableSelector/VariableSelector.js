@@ -1,7 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Select from 'react-select';
-import { map, filter, pick, includes, sortBy, flow, tap } from 'lodash/fp';
+import {
+  map,
+  filter,
+  some,
+  pick,
+  includes,
+  sortBy,
+  flow,
+  tap
+} from 'lodash/fp';
 import { groupByGeneral } from '../../../utils/fp';
 
 import logger from '../../../logger';
@@ -20,49 +29,71 @@ class VariableSelector extends Component {
     onChange: PropTypes.func,
   };
 
-  static variableType = variable => {
-    if (
-      includes('temperature', variable.short_name) &&
-      !includes('dew_point', variable.short_name)
-    ) {
-      return {
-        type: 'temperature',
-        label: 'Temperature',
-        order: 1,
-      };
+  static variableType = contexts => {
+    const types = [
+      {
+        condition: some(context =>
+          includes('temperature', context.short_name) &&
+          !includes('dew_point', context.short_name)
+        ),
+        value: {
+          label: 'Temperature',
+          code: 'temperature'
+        },
+      },
+      {
+        condition: some(context =>
+          includes('precipitation', context.short_name) ||
+          includes('rain', context.short_name) ||
+          includes('snow', context.short_name)
+        ),
+        value: {
+          label: 'Precipitation',
+          code: 'precipitation',
+        },
+      },
+      {
+        condition: some(context =>
+          includes('humidity', context.short_name) ||
+          includes('dew_point', context.short_name)
+        ),
+        value: {
+          label: 'Humidity',
+          code: 'humidity',
+        },
+      },
+      {
+        condition: some(context =>
+          includes('wind', context.short_name)
+        ),
+        value: {
+          label: 'Wind',
+          code: 'wind',
+        },
+      },
+      {
+        condition: () => true,
+        value: {
+          label: 'Miscellaneous',
+          code: 'misc',
+        },
+      },
+    ];
+
+    for (const [order, type] of types.entries()) {
+      if (type.condition(contexts)) {
+        return {
+          ...type.value,
+          order,
+        };
+      }
     }
-    if (
-      includes('precipitation', variable.short_name) ||
-      includes('rain', variable.short_name) ||
-      includes('snow', variable.short_name)
-    ) {
-      return {
-        type: 'precipitation',
-        label: 'Precipitation',
-        order: 2,
-      };
-    }
-    if (
-      includes('humidity', variable.short_name) ||
-      includes('dew_point', variable.short_name)
-    ) {
-      return {
-        type: 'humidity',
-        label: 'Humidity',
-        order: 3,
-      };
-    }
-    if (includes('wind', variable.short_name)) {
-      return {
-        type: 'wind',
-        label: 'Wind',
-        order: 4,
-      };
-    }
+
+    // Just in case I'm dumber than I think I am.
     return {
-      type: 'other',
-      label: 'Miscellaneous',
-      order: 5,
+      label: 'Programmer Fail',
+      type: 'fail',
+      order: 999,
     };
   };
 
@@ -75,21 +106,24 @@ class VariableSelector extends Component {
         // Create one option per unique variable display_name.
         map(variable => ({
           context: variable,
-          value: pick(['display_name', 'short_name'], variable),
+          value: variable.display_name,
         })),
         groupByGeneral(({ value }) => value),
         map(group => ({
           contexts: map(item => item.context)(group.items),
           value: group.by,
-          label: group.by.display_name,
+          label: group.by,
         })),
         sortBy('label'),
         tap(options => console.log('ungrouped options', options)),
 
         // Group options by variable type: temp, precip, humidity, wind, misc.
-        groupByGeneral(({ value }) => (
-          VariableSelector.variableType(value)
+        groupByGeneral(({ contexts }) => (
+          VariableSelector.variableType(contexts)
         )),
+
+        // Create from the grouped options a grouped options object that
+        // React Select can consume.
         map(group => ({
           ...group.by,
           options: group.items,
@@ -101,7 +135,6 @@ class VariableSelector extends Component {
   );
 
   render() {
-
     return (
       <Select
         options={VariableSelector.makeOptions(this.props.variables)}
