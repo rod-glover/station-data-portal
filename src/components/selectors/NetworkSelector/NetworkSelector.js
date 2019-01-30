@@ -59,11 +59,14 @@ class NetworkSelector extends Component {
         (this.makeOptions(this.props.networks))
     );
 
+  handleClickNone = () => this.props.onChange([]);
+
   render() {
     return (
       <div>
         <div><ControlLabel>Network</ControlLabel></div>
         <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
+        <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
         <Select
           options={this.makeOptions(this.props.networks)}
           styles={NetworkSelector.styles}
