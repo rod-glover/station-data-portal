@@ -1,17 +1,23 @@
-import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
 import logger from '../../logger';
 
 import './Template.css';
 
-logger.configure({active: true});
+logger.configure({ active: true });
 
 class Template extends Component {
-    render() {
-        return (
-            <div></div>
-        );
-    }
+  static propTypes = {
+  };
+
+  state = {};
+
+  render() {
+    return (
+      <div>Template</div>
+    );
+  }
 }
 
 export default Template;
