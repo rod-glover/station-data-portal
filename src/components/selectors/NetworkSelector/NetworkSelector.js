@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Button } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
-import { map, flow, tap } from 'lodash/fp';
+import { map, flow, sortBy, tap } from 'lodash/fp';
 
 import logger from '../../../logger';
 
@@ -30,20 +31,28 @@ class NetworkSelector extends Component {
             isDisabled: !network.publish,
           })
         ),
+        sortBy('label'),
         tap(options => console.log('options', options)),
       )(networks)
   ));
 
+  handleClickAll = () =>
+    this.props.onChange(this.makeOptions(this.props.networks));
+
   render() {
 
     return (
-      <Select
-        options={this.makeOptions(this.props.networks)}
-        placeholder={
-          this.props.networks ? 'Select or type to search...' : 'Loading...'
-        }
-        {...this.props}
-      />
+      <div>
+        <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
+        <Select
+          options={this.makeOptions(this.props.networks)}
+          placeholder={
+            this.props.networks ? 'Select or type to search...' : 'Loading...'
+          }
+          {...this.props}
+          isMulti
+        />
+      </div>
     );
   }
 }
