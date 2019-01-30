@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { FeatureGroup, LayerGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
-import { BCBaseMap } from 'pcic-react-leaflet-components';
+import memoize from 'memoize-one';
+import { map, filter, contains, tap } from 'lodash/fp';
 
-import SimpleGeoJSON from '../SimpleGeoJSON';
+import { BCBaseMap } from 'pcic-react-leaflet-components';
 
 import './Portal.css';
 
@@ -24,7 +25,7 @@ logger.configure({ active: true });
 class Portal extends Component {
   state = {
     networks: null,
-    seletedNetworks: null,
+    seletedNetworks: [],
     variables: null,
     variable: null,
     stations: null,
@@ -41,6 +42,15 @@ class Portal extends Component {
     .then(response => this.setState({ stations: response.data }));
   }
 
+  filteredStations = memoize((selectedNetworks, stations) =>
+    filter(
+      station => contains(
+        station.network_uri,
+        map(nw => nw.value.uri)(selectedNetworks)
+      )
+    )(stations)
+  );
+
   render() {
     return (
       <Row className="Portal">
@@ -53,7 +63,12 @@ class Portal extends Component {
             </FeatureGroup>
             <LayerGroup>
               <StationMarkers
-                stations={this.state.stations}
+                stations={
+                  this.filteredStations(
+                    this.state.seletedNetworks,
+                    this.state.stations
+                  )
+                }
                 networks={this.state.networks}
               />
             </LayerGroup>
@@ -65,7 +80,6 @@ class Portal extends Component {
               networks={this.state.networks}
               value={this.state.seletedNetworks}
               onChange={this.handleChangeNetwork}
-              isMulti
               isSearchable
             />
             <JSONstringify object={this.state.seletedNetworks}/>
