@@ -10,6 +10,11 @@ export function getNetworks() {
 }
 
 
+export function getVariables() {
+  return axios.get(urljoin(SDS_URL, 'variables'));
+}
+
+
 export function getStations(params) {
   return axios.get(
     urljoin(SDS_URL, 'stations'),
