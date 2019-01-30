@@ -11,16 +11,22 @@ import './Portal.css';
 import logger from '../../logger';
 import NetworkSelector from '../selectors/NetworkSelector';
 import StationMarkers from '../maps/StationMarkers';
+import { getNetworks } from '../../data-services/station-data-service';
 
 logger.configure({ active: true });
 
 class Portal extends Component {
   state = {
+    networks: null,
     network: null,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
   handleChangeNetwork = this.handleChange.bind(this, 'network');
+
+  componentDidMount() {
+    getNetworks().then(response => this.setState({ networks: response.data }))
+  }
 
   render() {
     return (
@@ -40,6 +46,7 @@ class Portal extends Component {
         <Col lg={2} className="Data">
           <Row>
             <NetworkSelector
+              networks={this.state.networks}
               value={this.state.network}
               onChange={this.handleChangeNetwork}
               isSearchable

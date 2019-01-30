@@ -12,17 +12,10 @@ logger.configure({ active: true });
 
 class NetworkSelector extends Component {
   static propTypes = {
+    networks: PropTypes.array,
     value: PropTypes.object,
     onChange: PropTypes.func,
   };
-
-  state = {
-    networks: null,
-  };
-
-  componentDidMount() {
-    getNetworks().then(response => this.setState({ networks: response.data }))
-  }
 
   static makeOptions = networks => (
     networks === null ?
@@ -44,9 +37,9 @@ class NetworkSelector extends Component {
 
     return (
       <Select
-        options={NetworkSelector.makeOptions(this.state.networks)}
+        options={NetworkSelector.makeOptions(this.props.networks)}
         placeholder={
-          this.state.networks ? 'Select or type to search...' : 'Loading...'
+          this.props.networks ? 'Select or type to search...' : 'Loading...'
         }
         {...this.props}
       />
