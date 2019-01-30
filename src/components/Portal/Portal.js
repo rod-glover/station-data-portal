@@ -37,7 +37,7 @@ class Portal extends Component {
   render() {
     return (
       <Row className="Portal">
-        <Col lg={10} className="Map">
+        <Col lg={10} md={10} sm={10} className="Map">
           <BCBaseMap viewport={BCBaseMap.initialViewport}>
             <FeatureGroup>
               <EditControl
@@ -52,7 +52,7 @@ class Portal extends Component {
             </LayerGroup>
           </BCBaseMap>
         </Col>
-        <Col lg={2} className="Data">
+        <Col lg={2} md={2} sm={2} className="Data">
           <Row>
             <NetworkSelector
               networks={this.state.networks}
