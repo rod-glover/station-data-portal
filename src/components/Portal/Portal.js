@@ -47,6 +47,7 @@ class Portal extends Component {
             <LayerGroup>
               <StationMarkers
                 stations={this.state.stations}
+                networks={this.state.networks}
               />
             </LayerGroup>
           </BCBaseMap>
