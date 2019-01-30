@@ -38,7 +38,10 @@ class Portal extends Component {
   componentDidMount() {
     getNetworks().then(response => this.setState({ networks: response.data }));
     getVariables().then(response => this.setState({ variables: response.data }));
-    getStations({ limit: 100 })
+    getStations({
+      limit: 200,
+      stride: 50,
+    })
     .then(response => this.setState({ stations: response.data }));
   }
 
