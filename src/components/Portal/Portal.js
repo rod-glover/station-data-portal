@@ -3,7 +3,7 @@ import { Row, Col } from 'react-bootstrap';
 import { FeatureGroup, LayerGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import memoize from 'memoize-one';
-import { map, filter, contains, tap } from 'lodash/fp';
+import { flow, map, filter, flatten, uniq, intersection, contains, tap } from 'lodash/fp';
 
 import { BCBaseMap } from 'pcic-react-leaflet-components';
 
@@ -26,8 +26,10 @@ class Portal extends Component {
   state = {
     networks: null,
     seletedNetworks: [],
+
     variables: null,
     selectedVariables: [],
+
     stations: null,
   };
 
@@ -45,13 +47,34 @@ class Portal extends Component {
     .then(response => this.setState({ stations: response.data }));
   }
 
-  filteredStations = memoize((selectedNetworks, stations) =>
-    filter(
-      station => contains(
-        station.network_uri,
-        map(nw => nw.value.uri)(selectedNetworks)
-      )
-    )(stations)
+  filteredStations = memoize(
+    (selectedNetworks, selectedVariables, stations) => {
+      // console.log('filteredStations stations', stations)
+      // console.log('filteredStations variables', this.state.variables)
+      const selectedVariableUris = flow(
+        map(selectedVariable => selectedVariable.contexts),
+        flatten,
+        map(context => context.uri),
+        uniq,
+      )(selectedVariables);
+      // console.log('filteredStations selectedVariableUris', selectedVariableUris)
+      return flow(
+        // Filter by selected networks
+        filter(
+          station => (
+            contains(
+              station.network_uri,
+              map(nw => nw.value.uri)(selectedNetworks)
+            )
+          )
+        ),
+        // Then filter by selected variables
+        filter(
+          station =>
+            intersection(station.histories[0].variable_uris, selectedVariableUris).length > 0
+        ),
+      )(stations);
+    }
   );
 
   render() {
@@ -69,6 +92,7 @@ class Portal extends Component {
                 stations={
                   this.filteredStations(
                     this.state.seletedNetworks,
+                    this.state.selectedVariables,
                     this.state.stations
                   )
                 }
@@ -93,7 +117,7 @@ class Portal extends Component {
               onChange={this.handleChangeVariable}
               isSearchable
             />
-            <JSONstringify object={this.state.selectedVariables}/>
+            {/*<JSONstringify object={this.state.selectedVariables}/>*/}
           </Row>
           <Row>
             Download
