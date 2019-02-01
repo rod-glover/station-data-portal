@@ -29,6 +29,7 @@ import {
 } from '../../../data-services/station-data-service';
 import VariableSelector from '../../selectors/VariableSelector';
 import JSONstringify from '../../util/JSONstringify';
+import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelector';
 
 logger.configure({ active: true });
 
@@ -40,12 +41,15 @@ class Portal extends Component {
     variables: null,
     selectedVariables: [],
 
+    selectedFrequencies: [],
+
     stations: null,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
   handleChangeNetwork = this.handleChange.bind(this, 'seletedNetworks');
   handleChangeVariable = this.handleChange.bind(this, 'selectedVariables');
+  handleChangeFrequency = this.handleChange.bind(this, 'selectedFrequencies');
 
   componentDidMount() {
     getNetworks().then(response => this.setState({ networks: response.data }));
@@ -53,14 +57,14 @@ class Portal extends Component {
     getStations({
       params: {
         // limit: 1000,
-        // stride: 10,  // load every 10th station
+        stride: 10,  // load every 10th station
       },
     })
     .then(response => this.setState({ stations: response.data }));
   }
 
   filteredStations = memoize(
-    (selectedNetworks, selectedVariables, stations) => {
+    (selectedNetworks, selectedVariables, selectedFrequencies, stations) => {
       // console.log('filteredStations stations', stations)
       // console.log('filteredStations variables', this.state.variables)
       const selectedVariableUris = flow(
@@ -70,21 +74,25 @@ class Portal extends Component {
         uniq,
       )(selectedVariables);
       // console.log('filteredStations selectedVariableUris', selectedVariableUris)
+      const selectedFrequencyValues =
+        map(option => option.value)(selectedFrequencies);
+      // console.log('filteredStations selectedVariableUris', selectedVariableUris)
       return flow(
-        // Filter by selected networks
         filter(
-          station => (
-            contains(
-              station.network_uri,
-              map(nw => nw.value.uri)(selectedNetworks)
+          station => {
+            return (
+              contains(
+                station.network_uri,
+                map(nw => nw.value.uri)(selectedNetworks)
+              ) && (
+                station.histories && station.histories[0] &&
+                intersection(station.histories[0].variable_uris, selectedVariableUris).length > 0
+              ) && (
+                station.histories && station.histories[0] &&
+                contains(station.histories[0].freq, selectedFrequencyValues)
+              )
             )
-          )
-        ),
-        // Then filter by selected variables
-        filter(
-          station =>
-            station.histories && station.histories[0] &&
-            intersection(station.histories[0].variable_uris, selectedVariableUris).length > 0
+          }
         ),
       )(stations);
     }
@@ -94,6 +102,7 @@ class Portal extends Component {
     const filteredStations = this.filteredStations(
       this.state.seletedNetworks,
       this.state.selectedVariables,
+      this.state.selectedFrequencies,
       this.state.stations
     );
     return (
@@ -125,7 +134,8 @@ class Portal extends Component {
                 this.state.stations && (
                   filteredStations.length ?
                     (<p>{`${filteredStations.length} stations selected`}</p>) :
-                    (<p>No stations selected. Select at least one network and at least one variable.</p>)
+                    (<p>No stations selected. Select at least one network and at
+                      least one variable.</p>)
                 )
               }
 
@@ -151,6 +161,15 @@ class Portal extends Component {
                 isSearchable
               />
               {/*<JSONstringify object={this.state.selectedVariables}/>*/}
+            </Col>
+          </Row>
+          <Row className={'text-left'}>
+            <Col lg={12} md={12} sm={12}>
+              <FrequencySelector
+                value={this.state.selectedFrequencies}
+                onChange={this.handleChangeFrequency}
+              />
+              <JSONstringify object={this.state.selectedFrequencies}/>
             </Col>
           </Row>
           <Row>
