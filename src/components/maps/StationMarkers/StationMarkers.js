@@ -11,24 +11,27 @@ import StationPopup from '../StationPopup';
 logger.configure({ active: true });
 
 
-// TODO: Make static prop of class?
-const stationMarkerOptions = {
-  radius: 8,
-  weight: 1,
-  fillOpacity: 0.75,
-};
+const noStations = [];
+
+const network = (station, networks) => (
+  find({ uri: station.network_uri })(networks)
+);
 
 class StationMarkers extends Component {
   static propTypes = {
-    stations: PropTypes.array,
-    networks: PropTypes.array,
+    stations: PropTypes.array.isRequired,
+    networks: PropTypes.array.isRequired,
+    markerOptions: PropTypes.object,
   };
 
-  static noStations = [];
-
-  static network = (station, networks) => (
-    find({ uri: station.network_uri })(networks)
-  );
+  static defaultProps = {
+    markerOptions: {
+      radius: 4,
+      weight: 1,
+      fillOpacity: 0.75,
+      color: '#000000',
+    },
+  };
 
   render() {
     return (
@@ -36,7 +39,7 @@ class StationMarkers extends Component {
         tap(stations => console.log('stations', stations)),
         map(station => {
           const history = station.histories[0];
-          const stn_nw = StationMarkers.network(station, this.props.networks);
+          const nw = network(station, this.props.networks);
           return (
             history &&
             <CircleMarker
@@ -45,14 +48,14 @@ class StationMarkers extends Component {
                 lng: history.lon,
                 lat: history.lat
               }}
-              {...stationMarkerOptions}
-              color={stn_nw.color}
+              {...this.props.markerOptions}
+              color={nw && nw.color}
             >
               <StationPopup station={station}/>
             </CircleMarker>
           )
         })
-      )(this.props.stations || StationMarkers.noStations)
+      )(this.props.stations || noStations)
     );
   }
 }
