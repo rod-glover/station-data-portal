@@ -134,8 +134,7 @@ class Portal extends Component {
                 this.state.stations && (
                   filteredStations.length ?
                     (<p>{`${filteredStations.length} stations selected`}</p>) :
-                    (<p>No stations selected. Select at least one network and at
-                      least one variable.</p>)
+                    (<p>No stations selected. Select at least one network, at least one variable, and at least one observation frequency.</p>)
                 )
               }
 
@@ -169,7 +168,7 @@ class Portal extends Component {
                 value={this.state.selectedFrequencies}
                 onChange={this.handleChangeFrequency}
               />
-              <JSONstringify object={this.state.selectedFrequencies}/>
+              {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
             </Col>
           </Row>
           <Row>
