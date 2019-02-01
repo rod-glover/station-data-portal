@@ -19,16 +19,16 @@ import { BCBaseMap } from 'pcic-react-leaflet-components';
 
 import './Portal.css';
 
-import logger from '../../logger';
-import NetworkSelector from '../selectors/NetworkSelector';
-import StationMarkers from '../maps/StationMarkers';
+import logger from '../../../logger';
+import NetworkSelector from '../../selectors/NetworkSelector';
+import StationMarkers from '../../maps/StationMarkers';
 import {
   getNetworks,
   getVariables,
   getStations,
-} from '../../data-services/station-data-service';
-import VariableSelector from '../selectors/VariableSelector';
-import JSONstringify from '../util/JSONstringify';
+} from '../../../data-services/station-data-service';
+import VariableSelector from '../../selectors/VariableSelector';
+import JSONstringify from '../../util/JSONstringify';
 
 logger.configure({ active: true });
 
