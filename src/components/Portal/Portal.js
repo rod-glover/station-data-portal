@@ -3,7 +3,17 @@ import { Row, Col } from 'react-bootstrap';
 import { FeatureGroup, LayerGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import memoize from 'memoize-one';
-import { flow, map, filter, flatten, uniq, intersection, contains, tap } from 'lodash/fp';
+import {
+  flow,
+  map,
+  filter,
+  flatten,
+  uniq,
+  intersection,
+  contains,
+  pick,
+  tap
+} from 'lodash/fp';
 
 import { BCBaseMap } from 'pcic-react-leaflet-components';
 
@@ -41,8 +51,10 @@ class Portal extends Component {
     getNetworks().then(response => this.setState({ networks: response.data }));
     getVariables().then(response => this.setState({ variables: response.data }));
     getStations({
-      limit: 200,
-      stride: 50,
+      params: {
+        // limit: 1000,
+        // stride: 10,  // load every 10th station
+      },
     })
     .then(response => this.setState({ stations: response.data }));
   }
@@ -71,6 +83,7 @@ class Portal extends Component {
         // Then filter by selected variables
         filter(
           station =>
+            station.histories && station.histories[0] &&
             intersection(station.histories[0].variable_uris, selectedVariableUris).length > 0
         ),
       )(stations);
@@ -78,9 +91,14 @@ class Portal extends Component {
   );
 
   render() {
+    const filteredStations = this.filteredStations(
+      this.state.seletedNetworks,
+      this.state.selectedVariables,
+      this.state.stations
+    );
     return (
       <Row className="Portal">
-        <Col lg={10} md={8} sm={12} className="Map">
+        <Col lg={9} md={8} sm={12} className="Map">
           <BCBaseMap viewport={BCBaseMap.initialViewport}>
             <FeatureGroup>
               <EditControl
@@ -89,35 +107,51 @@ class Portal extends Component {
             </FeatureGroup>
             <LayerGroup>
               <StationMarkers
-                stations={
-                  this.filteredStations(
-                    this.state.seletedNetworks,
-                    this.state.selectedVariables,
-                    this.state.stations
-                  )
-                }
+                stations={filteredStations}
                 networks={this.state.networks}
               />
             </LayerGroup>
           </BCBaseMap>
         </Col>
-        <Col lg={2} md={4} sm={12} className="Data">
+        <Col lg={3} md={4} sm={12} className="Data">
           <Row className={'text-left'}>
-            <NetworkSelector
-              networks={this.state.networks}
-              value={this.state.seletedNetworks}
-              onChange={this.handleChangeNetwork}
-              isSearchable
-            />
-            {/*<JSONstringify object={this.state.seletedNetworks}/>*/}
+            <Col lg={12} md={12} sm={12}>
+              <p>{
+                this.state.stations ?
+                  `${this.state.stations.length} stations available` :
+                  `Loading station info ... (this may take a couple of minutes)`
+              }</p>
+              {
+                this.state.stations && (
+                  filteredStations.length ?
+                    (<p>{`${filteredStations.length} stations selected`}</p>) :
+                    (<p>No stations selected. Select at least one network and at least one variable.</p>)
+                )
+              }
 
-            <VariableSelector
-              variables={this.state.variables}
-              value={this.state.selectedVariables}
-              onChange={this.handleChangeVariable}
-              isSearchable
-            />
-            {/*<JSONstringify object={this.state.selectedVariables}/>*/}
+            </Col>
+          </Row>
+          <Row className={'text-left'}>
+            <Col lg={12} md={12} sm={12}>
+              <NetworkSelector
+                networks={this.state.networks}
+                value={this.state.seletedNetworks}
+                onChange={this.handleChangeNetwork}
+                isSearchable
+              />
+              {/*<JSONstringify object={this.state.seletedNetworks}/>*/}
+            </Col>
+          </Row>
+          <Row className={'text-left'}>
+            <Col lg={12} md={12} sm={12}>
+              <VariableSelector
+                variables={this.state.variables}
+                value={this.state.selectedVariables}
+                onChange={this.handleChangeVariable}
+                isSearchable
+              />
+              {/*<JSONstringify object={this.state.selectedVariables}/>*/}
+            </Col>
           </Row>
           <Row>
             Download
