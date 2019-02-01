@@ -15,11 +15,9 @@ export function getVariables() {
 }
 
 
-export function getStations(params) {
+export function getStations(config) {
   return axios.get(
     urljoin(SDS_URL, 'stations'),
-    {
-      params,
-    },
+    config,
   );
 }
