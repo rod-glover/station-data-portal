@@ -27,7 +27,7 @@ logger.configure({ active: true });
 // and reuse here? Right now there is a lot of repetition of function.
 class VariableSelector extends Component {
   static propTypes = {
-    variables: PropTypes.array,
+    allVariables: PropTypes.array,
     value: PropTypes.object,
     onChange: PropTypes.func,
   };
@@ -101,11 +101,11 @@ class VariableSelector extends Component {
   };
 
   // This function must be an instance property to be memoized correctly.
-  makeOptions = memoize(variables => (
-    variables === null ?
+  makeOptions = memoize(allVariables => (
+    allVariables === null ?
       [] :
       flow(
-        tap(variables => console.log('variables', variables)),
+        tap(allVariables => console.log('allVariables', allVariables)),
 
         // Create one option per unique variable display_name.
         map(variable => ({
@@ -135,7 +135,7 @@ class VariableSelector extends Component {
         sortBy('order'),
 
         tap(options => console.log('grouped variable options', options)),
-      )(variables)
+      )(allVariables)
   ));
 
   handleClickAll = () =>
@@ -144,7 +144,7 @@ class VariableSelector extends Component {
         map(group => group.options),
         flatten,
         filter(option => !option.isDisabled),
-      )(this.makeOptions(this.props.variables))
+      )(this.makeOptions(this.props.allVariables))
     );
 
   makeHandleClickGroup = group =>
@@ -153,7 +153,7 @@ class VariableSelector extends Component {
   handleClickNone = () => this.props.onChange([]);
 
   render() {
-    const options = this.makeOptions(this.props.variables);
+    const options = this.makeOptions(this.props.allVariables);
     return (
       <div>
         <div><ControlLabel>Variable</ControlLabel></div>
@@ -173,7 +173,7 @@ class VariableSelector extends Component {
         <Select
           options={options}
           placeholder={
-            this.props.variables ? 'Select or type to search...' : 'Loading...'
+            this.props.allVariables ? 'Select or type to search...' : 'Loading...'
           }
           {...this.props}
           isMulti

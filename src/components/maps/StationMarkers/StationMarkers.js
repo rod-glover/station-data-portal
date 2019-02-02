@@ -13,14 +13,25 @@ logger.configure({ active: true });
 
 const noStations = [];
 
-const network = (station, networks) => (
+
+const network_for = (station, networks) => (
   find({ uri: station.network_uri })(networks)
 );
+
+
+const variables_for = (history, variables) => (
+  // history.variable_uris
+  map(
+    variable_uri => find({ uri: variable_uri })(variables)
+  )(history.variable_uris)
+);
+
 
 class StationMarkers extends Component {
   static propTypes = {
     stations: PropTypes.array.isRequired,
-    networks: PropTypes.array.isRequired,
+    allNetworks: PropTypes.array.isRequired,
+    allVariables: PropTypes.array.isRequired,
     markerOptions: PropTypes.object,
   };
 
@@ -39,7 +50,8 @@ class StationMarkers extends Component {
         tap(stations => console.log('stations', stations)),
         map(station => {
           const history = station.histories[0];
-          const nw = network(station, this.props.networks);
+          const network = network_for(station, this.props.allNetworks);
+          const variables = variables_for(history, this.props.allVariables);
           return (
             history &&
             <CircleMarker
@@ -49,9 +61,13 @@ class StationMarkers extends Component {
                 lat: history.lat
               }}
               {...this.props.markerOptions}
-              color={nw && nw.color}
+              color={network && network.color}
             >
-              <StationPopup station={station}/>
+              <StationPopup
+                station={station}
+                network={network}
+                variables={variables}
+              />
             </CircleMarker>
           )
         })

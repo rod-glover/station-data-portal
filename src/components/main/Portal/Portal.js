@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Button } from 'react-bootstrap';
 import { FeatureGroup, LayerGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import memoize from 'memoize-one';
@@ -35,38 +35,41 @@ logger.configure({ active: true });
 
 class Portal extends Component {
   state = {
-    networks: null,
-    seletedNetworks: [],
+    allNetworks: null,
+    selectedNetworks: [],
 
-    variables: null,
+    allVariables: null,
     selectedVariables: [],
 
     selectedFrequencies: [],
 
-    stations: null,
+    allStations: null,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
-  handleChangeNetwork = this.handleChange.bind(this, 'seletedNetworks');
+  handleChangeNetwork = this.handleChange.bind(this, 'selectedNetworks');
   handleChangeVariable = this.handleChange.bind(this, 'selectedVariables');
   handleChangeFrequency = this.handleChange.bind(this, 'selectedFrequencies');
 
+  handleClickAll = () => null;
+  handleClickNone = () => null;
+
   componentDidMount() {
-    getNetworks().then(response => this.setState({ networks: response.data }));
-    getVariables().then(response => this.setState({ variables: response.data }));
+    getNetworks().then(response => this.setState({ allNetworks: response.data }));
+    getVariables().then(response => this.setState({ allVariables: response.data }));
     getStations({
       params: {
         // limit: 1000,
-        stride: 10,  // load every 10th station
+        stride: 50,  // load every 10th station
       },
     })
-    .then(response => this.setState({ stations: response.data }));
+    .then(response => this.setState({ allStations: response.data }));
   }
 
   filteredStations = memoize(
-    (selectedNetworks, selectedVariables, selectedFrequencies, stations) => {
-      // console.log('filteredStations stations', stations)
-      // console.log('filteredStations variables', this.state.variables)
+    (selectedNetworks, selectedVariables, selectedFrequencies, allStations) => {
+      // console.log('filteredStations allStations', allStations)
+      // console.log('filteredStations allVariables', this.state.allVariables)
       const selectedVariableUris = flow(
         map(selectedVariable => selectedVariable.contexts),
         flatten,
@@ -94,16 +97,16 @@ class Portal extends Component {
             )
           }
         ),
-      )(stations);
+      )(allStations);
     }
   );
 
   render() {
     const filteredStations = this.filteredStations(
-      this.state.seletedNetworks,
+      this.state.selectedNetworks,
       this.state.selectedVariables,
       this.state.selectedFrequencies,
-      this.state.stations
+      this.state.allStations
     );
     return (
       <Row className="Portal">
@@ -117,7 +120,8 @@ class Portal extends Component {
             <LayerGroup>
               <StationMarkers
                 stations={filteredStations}
-                networks={this.state.networks}
+                allNetworks={this.state.allNetworks}
+                allVariables={this.state.allVariables}
               />
             </LayerGroup>
           </BCBaseMap>
@@ -126,12 +130,12 @@ class Portal extends Component {
           <Row className={'text-left'}>
             <Col lg={12} md={12} sm={12}>
               <p>{
-                this.state.stations ?
-                  `${this.state.stations.length} stations available` :
+                this.state.allStations ?
+                  `${this.state.allStations.length} stations available` :
                   `Loading station info ... (this may take a couple of minutes)`
               }</p>
               {
-                this.state.stations && (
+                this.state.allStations && (
                   filteredStations.length ?
                     (<p>{`${filteredStations.length} stations selected`}</p>) :
                     (<p>No stations selected. Select at least one network, at least one variable, and at least one observation frequency.</p>)
@@ -142,19 +146,25 @@ class Portal extends Component {
           </Row>
           <Row className={'text-left'}>
             <Col lg={12} md={12} sm={12}>
+              <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
+              <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
+            </Col>
+          </Row>
+          <Row className={'text-left'}>
+            <Col lg={12} md={12} sm={12}>
               <NetworkSelector
-                networks={this.state.networks}
-                value={this.state.seletedNetworks}
+                allNetworks={this.state.allNetworks}
+                value={this.state.selectedNetworks}
                 onChange={this.handleChangeNetwork}
                 isSearchable
               />
-              {/*<JSONstringify object={this.state.seletedNetworks}/>*/}
+              {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
             </Col>
           </Row>
           <Row className={'text-left'}>
             <Col lg={12} md={12} sm={12}>
               <VariableSelector
-                variables={this.state.variables}
+                allVariables={this.state.allVariables}
                 value={this.state.selectedVariables}
                 onChange={this.handleChangeVariable}
                 isSearchable

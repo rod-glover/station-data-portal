@@ -13,17 +13,17 @@ logger.configure({ active: true });
 
 class NetworkSelector extends Component {
   static propTypes = {
-    networks: PropTypes.array,
+    allNetworks: PropTypes.array,
     value: PropTypes.object,
     onChange: PropTypes.func,
   };
 
   // This function must be an instance property to be memoized correctly.
-  makeOptions = memoize(networks => (
-    networks === null ?
+  makeOptions = memoize(allNetworks => (
+    allNetworks === null ?
       [] :
       flow(
-        tap(networks => console.log('networks', networks)),
+        tap(allNetworks => console.log('allNetworks', allNetworks)),
         map(
           network => ({
             value: network,
@@ -33,7 +33,7 @@ class NetworkSelector extends Component {
         ),
         sortBy('label'),
         tap(options => console.log('options', options)),
-      )(networks)
+      )(allNetworks)
   ));
 
   static styles = {
@@ -56,7 +56,7 @@ class NetworkSelector extends Component {
   handleClickAll = () =>
     this.props.onChange(
       filter(option => !option.isDisabled)
-        (this.makeOptions(this.props.networks))
+        (this.makeOptions(this.props.allNetworks))
     );
 
   handleClickNone = () => this.props.onChange([]);
@@ -68,10 +68,10 @@ class NetworkSelector extends Component {
         <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
         <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
         <Select
-          options={this.makeOptions(this.props.networks)}
+          options={this.makeOptions(this.props.allNetworks)}
           styles={NetworkSelector.styles}
           placeholder={
-            this.props.networks ? 'Select or type to search...' : 'Loading...'
+            this.props.allNetworks ? 'Select or type to search...' : 'Loading...'
           }
           {...this.props}
           isMulti
