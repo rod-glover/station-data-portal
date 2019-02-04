@@ -38,6 +38,7 @@ class Portal extends Component {
   state = {
     allNetworks: null,
     selectedNetworks: [],
+    networkActions: {},
 
     allVariables: null,
     selectedVariables: [],
@@ -48,12 +49,21 @@ class Portal extends Component {
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
+  handleNetworkSelectorReady = networkActions => {
+    console.log('handleNetworkSelectorReady', networkActions)
+    this.setState({ networkActions });
+  };
+  // handleNetworkSelectorReady = this.handleChange.bind(this, 'networkActions');
   handleChangeNetwork = this.handleChange.bind(this, 'selectedNetworks');
   handleChangeVariable = this.handleChange.bind(this, 'selectedVariables');
   handleChangeFrequency = this.handleChange.bind(this, 'selectedFrequencies');
 
-  handleClickAll = () => null;
-  handleClickNone = () => null;
+  handleClickAll = () => {
+    this.state.networkActions.selectAll();
+  };
+  handleClickNone = () => {
+    this.state.networkActions.selectNone();
+  };
 
   componentDidMount() {
     getNetworks().then(response => this.setState({ allNetworks: response.data }));
@@ -180,10 +190,12 @@ class Portal extends Component {
             <Col lg={12} md={12} sm={12}>
               <NetworkSelector
                 allNetworks={this.state.allNetworks}
+                onReady={this.handleNetworkSelectorReady}
                 value={this.state.selectedNetworks}
                 onChange={this.handleChangeNetwork}
                 isSearchable
               />
+              <JSONstringify object={this.state.networkActions}/>
               {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
             </Col>
           </Row>

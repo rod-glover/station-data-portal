@@ -13,10 +13,25 @@ logger.configure({ active: true });
 
 class NetworkSelector extends Component {
   static propTypes = {
-    allNetworks: PropTypes.array,
-    value: PropTypes.object,
-    onChange: PropTypes.func,
+    allNetworks: PropTypes.array.isRequired,
+    onReady: PropTypes.func.isRequired,
+    value: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
   };
+
+  static defaultProps = {
+    onReady: () => null,
+  };
+
+  componentDidMount() {
+    console.log('componentDidMount', this.handleClickAll, this.handleClickNone)
+    const actions = {
+      selectAll: this.handleClickAll,
+      selectNone: this.handleClickNone,
+    };
+    console.log('componentDidMount', actions)
+    this.props.onReady(actions);
+  }
 
   // This function must be an instance property to be memoized correctly.
   makeOptions = memoize(allNetworks => (
