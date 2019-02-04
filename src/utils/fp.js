@@ -3,6 +3,13 @@ import {
 } from 'lodash/fp';
 
 
+// TODO: There is a better fp way to do this. Find it and do it.
+export const composeWithRestArgs = curry(
+  (f, g) =>
+    (first, ...rest) => f(g(first, ...rest), ...rest)
+);
+
+
 // Group a list by accumulating all items that match on `by` into a single
 // list item containing the `by` value. The result is a list of objects
 // of the following shape:
