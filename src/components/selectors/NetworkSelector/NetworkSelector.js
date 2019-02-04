@@ -24,12 +24,10 @@ class NetworkSelector extends Component {
   };
 
   componentDidMount() {
-    console.log('componentDidMount', this.handleClickAll, this.handleClickNone)
     const actions = {
       selectAll: this.handleClickAll,
       selectNone: this.handleClickNone,
     };
-    console.log('componentDidMount', actions)
     this.props.onReady(actions);
   }
 

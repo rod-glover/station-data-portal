@@ -42,27 +42,34 @@ class Portal extends Component {
 
     allVariables: null,
     selectedVariables: [],
+    variableActions: {},
 
     selectedFrequencies: [],
+    frequencyActions: {},
 
     allStations: null,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
-  handleNetworkSelectorReady = networkActions => {
-    console.log('handleNetworkSelectorReady', networkActions)
-    this.setState({ networkActions });
-  };
-  // handleNetworkSelectorReady = this.handleChange.bind(this, 'networkActions');
+
   handleChangeNetwork = this.handleChange.bind(this, 'selectedNetworks');
+  handleNetworkSelectorReady = this.handleChange.bind(this, 'networkActions');
+
   handleChangeVariable = this.handleChange.bind(this, 'selectedVariables');
+  handleVariableSelectorReady = this.handleChange.bind(this, 'variableActions');
+
   handleChangeFrequency = this.handleChange.bind(this, 'selectedFrequencies');
+  handleFrequencySelectorReady = this.handleChange.bind(this, 'frequencyActions');
 
   handleClickAll = () => {
     this.state.networkActions.selectAll();
+    this.state.variableActions.selectAll();
+    this.state.frequencyActions.selectAll();
   };
   handleClickNone = () => {
     this.state.networkActions.selectNone();
+    this.state.variableActions.selectNone();
+    this.state.frequencyActions.selectNone();
   };
 
   componentDidMount() {
@@ -164,15 +171,19 @@ class Portal extends Component {
             <Col lg={12} md={12} sm={12}>
               <p>{
                 this.state.allStations ?
-                  `${this.state.allStations.length} stations available` :
+                  `${this.state.allStations.length} stations available.` :
                   `Loading station info ... (this may take a couple of minutes)`
               }</p>
+              <p>{`
+              Available stations are filtered by
+              the network they are part of,
+              the variable(s) they observe,
+              and the frequency of obervation.
+              Stations matching selected criteria are displayed on the map.
+              `}</p>
               {
-                this.state.allStations && (
-                  filteredStations.length ?
-                    (<p>{`${filteredStations.length} stations selected`}</p>) :
-                    (<p>No stations selected.</p>)
-                )
+                this.state.allStations &&
+                <p>{`${filteredStations.length || 'No'} stations match criteria.`}</p>
               }
               {
                 unselectedThings &&
@@ -182,8 +193,8 @@ class Portal extends Component {
           </Row>
           <Row className={'text-left'}>
             <Col lg={12} md={12} sm={12}>
-              <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
-              <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
+              <Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>
+              <Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>
             </Col>
           </Row>
           <Row className={'text-left'}>
@@ -195,7 +206,6 @@ class Portal extends Component {
                 onChange={this.handleChangeNetwork}
                 isSearchable
               />
-              <JSONstringify object={this.state.networkActions}/>
               {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
             </Col>
           </Row>
@@ -203,6 +213,7 @@ class Portal extends Component {
             <Col lg={12} md={12} sm={12}>
               <VariableSelector
                 allVariables={this.state.allVariables}
+                onReady={this.handleVariableSelectorReady}
                 value={this.state.selectedVariables}
                 onChange={this.handleChangeVariable}
                 isSearchable
@@ -213,6 +224,7 @@ class Portal extends Component {
           <Row className={'text-left'}>
             <Col lg={12} md={12} sm={12}>
               <FrequencySelector
+                onReady={this.handleFrequencySelectorReady}
                 value={this.state.selectedFrequencies}
                 onChange={this.handleChangeFrequency}
               />

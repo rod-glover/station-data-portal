@@ -27,10 +27,23 @@ logger.configure({ active: true });
 // and reuse here? Right now there is a lot of repetition of function.
 class VariableSelector extends Component {
   static propTypes = {
-    allVariables: PropTypes.array,
-    value: PropTypes.object,
-    onChange: PropTypes.func,
+    allVariables: PropTypes.array.isRequired,
+    onReady: PropTypes.func.isRequired,
+    value: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
   };
+
+  static defaultProps = {
+    onReady: () => null,
+  };
+
+  componentDidMount() {
+    const actions = {
+      selectAll: this.handleClickAll,
+      selectNone: this.handleClickNone,
+    };
+    this.props.onReady(actions);
+  }
 
   static variableType = contexts => {
     const types = [

@@ -36,10 +36,22 @@ const options = [
 
 class FrequencySelector extends Component {
   static propTypes = {
-    networks: PropTypes.array,
-    value: PropTypes.object,
-    onChange: PropTypes.func,
+    onReady: PropTypes.func.isRequired,
+    value: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired,
   };
+
+  static defaultProps = {
+    onReady: () => null,
+  };
+
+  componentDidMount() {
+    const actions = {
+      selectAll: this.handleClickAll,
+      selectNone: this.handleClickNone,
+    };
+    this.props.onReady(actions);
+  }
 
   handleClickAll = () => this.props.onChange(options);
 
