@@ -34,6 +34,21 @@ import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelect
 
 logger.configure({ active: true });
 
+
+const commonSelectorStyles = {
+  valueContainer: (provided, state) => ({
+    ...provided,
+    maxHeight: '10em',
+    overflowY: 'auto',
+    zIndex: '9999',
+  }),
+  indicatorsContainer: (provided, state) => ({
+    width: '2em',
+    // display: 'none'
+  }),
+};
+
+
 class Portal extends Component {
   state = {
     allNetworks: null,
@@ -149,93 +164,93 @@ class Portal extends Component {
     )(selections);
 
     return (
-      <Row className="Portal">
-        <Col lg={9} md={8} sm={12} className="Map">
-          <BCBaseMap viewport={BCBaseMap.initialViewport}>
-            <FeatureGroup>
-              <EditControl
-                position={'topleft'}
-              />
-            </FeatureGroup>
-            <LayerGroup>
-              <StationMarkers
-                stations={filteredStations}
-                allNetworks={this.state.allNetworks}
-                allVariables={this.state.allVariables}
-              />
-            </LayerGroup>
-          </BCBaseMap>
-        </Col>
-        <Col lg={3} md={4} sm={12} className="Data">
-          <Row className={'text-left'}>
-            <Col lg={12} md={12} sm={12}>
-              <p>{
-                this.state.allStations ?
-                  `${this.state.allStations.length} stations available.` :
-                  `Loading station info ... (this may take a couple of minutes)`
-              }</p>
-              <p>{`
+      <React.Fragment>
+        <Row>
+          <Col lg={2} md={2} sm={2}>
+            <p>{
+              this.state.allStations ?
+                `${this.state.allStations.length} stations available.` :
+                `Loading station info ... (this may take a couple of minutes)`
+            }</p>
+            <p>{`
               Available stations are filtered by
               the network they are part of,
               the variable(s) they observe,
               and the frequency of obervation.
               Stations matching selected criteria are displayed on the map.
               `}</p>
-              {
-                this.state.allStations &&
-                <p>{`${filteredStations.length || 'No'} stations match criteria.`}</p>
-              }
-              {
-                unselectedThings &&
-                <p>You haven't selected any {unselectedThings}.</p>
-              }
-            </Col>
-          </Row>
-          <Row className={'text-left'}>
-            <Col lg={12} md={12} sm={12}>
-              <Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>
-              <Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>
-            </Col>
-          </Row>
-          <Row className={'text-left'}>
-            <Col lg={12} md={12} sm={12}>
-              <NetworkSelector
-                allNetworks={this.state.allNetworks}
-                onReady={this.handleNetworkSelectorReady}
-                value={this.state.selectedNetworks}
-                onChange={this.handleChangeNetwork}
-                isSearchable
-              />
-              {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
-            </Col>
-          </Row>
-          <Row className={'text-left'}>
-            <Col lg={12} md={12} sm={12}>
-              <VariableSelector
-                allVariables={this.state.allVariables}
-                onReady={this.handleVariableSelectorReady}
-                value={this.state.selectedVariables}
-                onChange={this.handleChangeVariable}
-                isSearchable
-              />
-              {/*<JSONstringify object={this.state.selectedVariables}/>*/}
-            </Col>
-          </Row>
-          <Row className={'text-left'}>
-            <Col lg={12} md={12} sm={12}>
-              <FrequencySelector
-                onReady={this.handleFrequencySelectorReady}
-                value={this.state.selectedFrequencies}
-                onChange={this.handleChangeFrequency}
-              />
-              {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
-            </Col>
-          </Row>
-          <Row>
-            Download
-          </Row>
-        </Col>
-      </Row>
+            {
+              this.state.allStations &&
+              <p>{`${filteredStations.length || 'No'} stations match criteria.`}</p>
+            }
+            {
+              unselectedThings &&
+              <p>You haven't selected any {unselectedThings}.</p>
+            }
+            <Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>
+            <Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>
+          </Col>
+
+          <Col lg={4} md={4} sm={4}>
+            <NetworkSelector
+              allNetworks={this.state.allNetworks}
+              onReady={this.handleNetworkSelectorReady}
+              value={this.state.selectedNetworks}
+              onChange={this.handleChangeNetwork}
+              isSearchable
+              isClearable={false}
+              styles={commonSelectorStyles}
+            />
+            {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
+          </Col>
+          <Col lg={4} md={4} sm={4}>
+            <VariableSelector
+              allVariables={this.state.allVariables}
+              onReady={this.handleVariableSelectorReady}
+              value={this.state.selectedVariables}
+              onChange={this.handleChangeVariable}
+              isSearchable
+              isClearable={false}
+              styles={commonSelectorStyles}
+            />
+            {/*<JSONstringify object={this.state.selectedVariables}/>*/}
+          </Col>
+          <Col lg={2} md={2} sm={2}>
+            <FrequencySelector
+              onReady={this.handleFrequencySelectorReady}
+              value={this.state.selectedFrequencies}
+              onChange={this.handleChangeFrequency}
+              isClearable={false}
+              styles={commonSelectorStyles}
+            />
+            {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
+          </Col>
+        </Row>
+
+        <Row>
+          <Col lg={9} md={8} sm={12} className="Map">
+            <BCBaseMap viewport={BCBaseMap.initialViewport}>
+              <FeatureGroup>
+                <EditControl
+                  position={'topleft'}
+                />
+              </FeatureGroup>
+              <LayerGroup>
+                <StationMarkers
+                  stations={filteredStations}
+                  allNetworks={this.state.allNetworks}
+                  allVariables={this.state.allVariables}
+                />
+              </LayerGroup>
+            </BCBaseMap>
+          </Col>
+          <Col lg={3} md={4} sm={12} className="Data">
+            <Row>
+              Download
+            </Row>
+          </Col>
+        </Row>
+      </React.Fragment>
     );
   }
 }
