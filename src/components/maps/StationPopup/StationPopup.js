@@ -4,6 +4,7 @@ import { Table } from 'react-bootstrap';
 import { Popup } from 'react-leaflet'
 import { map } from 'lodash/fp';
 import chroma from 'chroma-js';
+import FrequencySelector from '../../selectors/FrequencySelector';
 
 import logger from '../../../logger';
 
@@ -68,7 +69,7 @@ class StationPopup extends Component {
           </tr>
           <tr>
             <td>Observation frequency</td>
-            <td>{history.freq}</td>
+            <td>{FrequencySelector.valueToLabel(history.freq)}</td>
           </tr>
           <tr>
             <td rowSpan={variables.length+1}>Recorded variables</td>
