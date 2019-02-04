@@ -40,11 +40,10 @@ const commonSelectorStyles = {
     ...provided,
     maxHeight: '10em',
     overflowY: 'auto',
-    zIndex: '9999',
   }),
   indicatorsContainer: (provided, state) => ({
+    ...provided,
     width: '2em',
-    // display: 'none'
   }),
 };
 

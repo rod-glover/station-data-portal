@@ -34,6 +34,20 @@ import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelect
 
 logger.configure({ active: true });
 
+
+const commonSelectorStyles = {
+  valueContainer: (provided, state) => ({
+    ...provided,
+    maxHeight: '10em',
+    overflowY: 'auto',
+  }),
+  indicatorsContainer: (provided, state) => ({
+    ...provided,
+    width: '2em',
+  }),
+};
+
+
 class PortalA extends Component {
   state = {
     allNetworks: null,
@@ -205,6 +219,8 @@ class PortalA extends Component {
                 value={this.state.selectedNetworks}
                 onChange={this.handleChangeNetwork}
                 isSearchable
+                isClearable={false}
+                styles={commonSelectorStyles}
               />
               {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
             </Col>
@@ -217,6 +233,8 @@ class PortalA extends Component {
                 value={this.state.selectedVariables}
                 onChange={this.handleChangeVariable}
                 isSearchable
+                isClearable={false}
+                styles={commonSelectorStyles}
               />
               {/*<JSONstringify object={this.state.selectedVariables}/>*/}
             </Col>
@@ -227,6 +245,8 @@ class PortalA extends Component {
                 onReady={this.handleFrequencySelectorReady}
                 value={this.state.selectedFrequencies}
                 onChange={this.handleChangeFrequency}
+                isClearable={false}
+                styles={commonSelectorStyles}
               />
               {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
             </Col>
