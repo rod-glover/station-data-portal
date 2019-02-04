@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import { Button, ControlLabel } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
-import { map, flow, filter, sortBy, tap } from 'lodash/fp';
+import { map, flow, filter, sortBy, toPairs, fromPairs, identity, assign, compose, tap } from 'lodash/fp';
+import { composeWithRestArgs } from '../../../utils/fp'
 import chroma from 'chroma-js';
 import logger from '../../../logger';
 import './NetworkSelector.css';
@@ -49,7 +50,7 @@ class NetworkSelector extends Component {
       )(allNetworks)
   ));
 
-  static styles = {
+  static localStyles = {
     option: (styles, { value, isDisabled }) => {
       const color = chroma(value.color || '#000000');
       return {
@@ -75,6 +76,18 @@ class NetworkSelector extends Component {
   handleClickNone = () => this.props.onChange([]);
 
   render() {
+    const { styles } = this.props;
+    const composedStyles = assign(
+      styles,
+      flow(
+        toPairs,
+        map(([name, style]) => ([
+          name, composeWithRestArgs(style, styles[name] || identity)
+        ])),
+        fromPairs
+      )(NetworkSelector.localStyles)
+    );
+
     return (
       <div>
         <div><ControlLabel>Network</ControlLabel></div>
@@ -82,11 +95,11 @@ class NetworkSelector extends Component {
         <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
         <Select
           options={this.makeOptions(this.props.allNetworks)}
-          styles={NetworkSelector.styles}
           placeholder={
             this.props.allNetworks ? 'Select or type to search...' : 'Loading...'
           }
           {...this.props}
+          styles={composedStyles}
           isMulti
         />
       </div>
