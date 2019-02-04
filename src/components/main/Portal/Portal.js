@@ -12,6 +12,7 @@ import {
   intersection,
   contains,
   pick,
+  join,
   tap
 } from 'lodash/fp';
 
@@ -108,6 +109,28 @@ class Portal extends Component {
       this.state.selectedFrequencies,
       this.state.allStations
     );
+
+    const selections = [
+      {
+        name: 'networks',
+        items: this.state.selectedNetworks,
+      },
+      {
+        name: 'variables',
+        items: this.state.selectedVariables,
+      },
+      {
+        name: 'frequencies',
+        items: this.state.selectedFrequencies,
+      },
+    ];
+
+    const unselectedThings = flow(
+      filter(thing => thing.items.length === 0),
+      map(thing => thing.name),
+      join(', or '),
+    )(selections);
+
     return (
       <Row className="Portal">
         <Col lg={9} md={8} sm={12} className="Map">
@@ -138,10 +161,13 @@ class Portal extends Component {
                 this.state.allStations && (
                   filteredStations.length ?
                     (<p>{`${filteredStations.length} stations selected`}</p>) :
-                    (<p>No stations selected. Select at least one network, at least one variable, and at least one observation frequency.</p>)
+                    (<p>No stations selected.</p>)
                 )
               }
-
+              {
+                unselectedThings &&
+                <p>You haven't selected any {unselectedThings}.</p>
+              }
             </Col>
           </Row>
           <Row className={'text-left'}>
