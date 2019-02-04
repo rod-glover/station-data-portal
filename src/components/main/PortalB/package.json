@@ -1,0 +1,6 @@
+{
+  "name": "PortalB",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./PortalB.js"
+}

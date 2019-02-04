@@ -9,12 +9,13 @@ import logger from '../../../logger';
 import Header from '../Header/Header';
 
 import PortalA from '../PortalA';
+import PortalB from '../PortalB';
 
 import './App.css';
 
 const navSpec = [
   { label: 'Version A', path: 'A', component: PortalA },
-  // { label: 'Version B', path: 'B', component: SketchB },
+  { label: 'Version B', path: 'B', component: PortalB },
 ];
 
 
@@ -45,7 +46,7 @@ export default class App extends Component {
                         <Route path={`/${path}`} component={component}/>
                       ))
                     }
-                    <Redirect to={'/A'}/>
+                    <Redirect to={'/B'}/>
                   </Switch>
               </Grid>
             </div>
