@@ -1,6 +1,6 @@
 {
-  "name": "NetworkSelector",
+  "name": "FrequencySelector",
   "version": "0.0.0",
   "private": true,
-  "main": "./NetworkSelector.js"
+  "main": "./FrequencySelector.js"
 }

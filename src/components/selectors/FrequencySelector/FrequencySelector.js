@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Button, ControlLabel } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
-import { map, flow, filter, sortBy, tap } from 'lodash/fp';
+import { map, flow, filter, sortBy, find, tap } from 'lodash/fp';
 import chroma from 'chroma-js';
 import logger from '../../../logger';
 import './FrequencySelector.css';
@@ -24,6 +24,14 @@ const options = [
     label: 'Semi-daily',
     value: '12-hourly',
   },
+  {
+    label: 'Irregular',
+    value: 'irregular',
+  },
+  {
+    label: 'Unspecified',
+    value: '',
+  },
 ];
 
 class FrequencySelector extends Component {
@@ -36,6 +44,11 @@ class FrequencySelector extends Component {
   handleClickAll = () => this.props.onChange(options);
 
   handleClickNone = () => this.props.onChange([]);
+
+  static valueToLabel = value => {
+    const option = find({ value })(options);
+    return option ? option.label : option.value;
+  };
 
   render() {
     return (
