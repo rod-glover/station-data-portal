@@ -18,7 +18,7 @@ import {
 
 import { BCBaseMap } from 'pcic-react-leaflet-components';
 
-import './Portal.css';
+import './PortalA.css';
 
 import logger from '../../../logger';
 import NetworkSelector from '../../selectors/NetworkSelector';
@@ -34,7 +34,7 @@ import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelect
 
 logger.configure({ active: true });
 
-class Portal extends Component {
+class PortalA extends Component {
   state = {
     allNetworks: null,
     selectedNetworks: [],
@@ -149,7 +149,7 @@ class Portal extends Component {
     )(selections);
 
     return (
-      <Row className="Portal">
+      <Row className="PortalA">
         <Col lg={9} md={8} sm={12} className="Map">
           <BCBaseMap viewport={BCBaseMap.initialViewport}>
             <FeatureGroup>
@@ -240,4 +240,4 @@ class Portal extends Component {
   }
 }
 
-export default Portal;
+export default PortalA;

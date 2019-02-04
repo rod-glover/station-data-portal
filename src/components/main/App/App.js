@@ -1,21 +1,55 @@
 import React, {Component} from 'react';
 import { Grid } from 'react-bootstrap';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Route, Redirect, Switch } from 'react-router-dom';
+import { LinkContainer } from 'react-router-bootstrap';
 
 import logger from '../../../logger';
 import Header from '../Header/Header';
-import Portal from '../Portal';
+
+import PortalA from '../PortalA';
 
 import './App.css';
 
-class App extends Component {
+const navSpec = [
+  { label: 'Version A', path: 'A', component: PortalA },
+  // { label: 'Version B', path: 'B', component: SketchB },
+];
+
+
+export default class App extends Component {
     render() {
         return (
-            <Grid fluid className="App">
-                <Header/>
-                <Portal/>
-            </Grid>
+          <Router basename={'/#'}>
+            <div>
+              <Navbar fluid>
+                <Nav>
+                  {
+                    navSpec.map(({label, path}) => (
+                      <LinkContainer to={`/${path}`}>
+                        <NavItem eventKey={path}>
+                          {label}
+                        </NavItem>
+                      </LinkContainer>
+                    ))
+                  }
+                </Nav>
+              </Navbar>
+
+              <Grid fluid className="App">
+                  <Header/>
+                  <Switch>
+                    {
+                      navSpec.map(({path, component}) => (
+                        <Route path={`/${path}`} component={component}/>
+                      ))
+                    }
+                    <Redirect to={'/A'}/>
+                  </Switch>
+              </Grid>
+            </div>
+          </Router>
         );
     }
 }
-
-export default App;
