@@ -59,7 +59,7 @@ class FrequencySelector extends Component {
 
   static valueToLabel = value => {
     const option = find({ value })(options);
-    return option ? option.label : option.value;
+    return option ? option.label : value;
   };
 
   render() {
