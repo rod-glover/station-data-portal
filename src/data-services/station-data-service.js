@@ -21,3 +21,11 @@ export function getStations(config) {
     config,
   );
 }
+
+
+export function getObservationCounts(config) {
+  return axios.get(
+    urljoin(SDS_URL, 'observations', 'counts'),
+    config,
+  );
+}
