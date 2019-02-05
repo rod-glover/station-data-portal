@@ -31,6 +31,7 @@ import {
 import VariableSelector from '../../selectors/VariableSelector';
 import JSONstringify from '../../util/JSONstringify';
 import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelector';
+import ObservationCounts from '../../info/ObservationCounts';
 
 logger.configure({ active: true });
 
@@ -180,6 +181,7 @@ class PortalA extends Component {
             </LayerGroup>
           </BCBaseMap>
         </Col>
+
         <Col lg={3} md={4} sm={12} className="Data">
           <Row className={'text-left'}>
             <Col lg={12} md={12} sm={12}>
@@ -205,12 +207,14 @@ class PortalA extends Component {
               }
             </Col>
           </Row>
+
           <Row className={'text-left'}>
             <Col lg={12} md={12} sm={12}>
               <Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>
               <Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>
             </Col>
           </Row>
+
           <Row className={'text-left'}>
             <Col lg={12} md={12} sm={12}>
               <NetworkSelector
@@ -225,6 +229,7 @@ class PortalA extends Component {
               {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
             </Col>
           </Row>
+
           <Row className={'text-left'}>
             <Col lg={12} md={12} sm={12}>
               <VariableSelector
@@ -239,6 +244,7 @@ class PortalA extends Component {
               {/*<JSONstringify object={this.state.selectedVariables}/>*/}
             </Col>
           </Row>
+
           <Row className={'text-left'}>
             <Col lg={12} md={12} sm={12}>
               <FrequencySelector
@@ -251,8 +257,9 @@ class PortalA extends Component {
               {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
             </Col>
           </Row>
+
           <Row>
-            Download
+            <ObservationCounts stations={filteredStations}/>
           </Row>
         </Col>
       </Row>
