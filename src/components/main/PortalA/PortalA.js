@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Row, Col, Button, ControlLabel } from 'react-bootstrap';
 import { FeatureGroup, LayerGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import memoize from 'memoize-one';
@@ -32,6 +32,7 @@ import VariableSelector from '../../selectors/VariableSelector';
 import JSONstringify from '../../util/JSONstringify';
 import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelector';
 import ObservationCounts from '../../info/ObservationCounts';
+import DateSelector from '../../selectors/DateSelector';
 
 logger.configure({ active: true });
 
@@ -51,6 +52,9 @@ const commonSelectorStyles = {
 
 class PortalA extends Component {
   state = {
+    startDate: null,
+    endDate: null,
+
     allNetworks: null,
     selectedNetworks: [],
     networkActions: {},
@@ -66,6 +70,9 @@ class PortalA extends Component {
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
+
+  handleChangeStartDate = this.handleChange.bind(this, 'startDate');
+  handleChangeEndDate = this.handleChange.bind(this, 'endDate');
 
   handleChangeNetwork = this.handleChange.bind(this, 'selectedNetworks');
   handleNetworkSelectorReady = this.handleChange.bind(this, 'networkActions');
@@ -100,9 +107,10 @@ class PortalA extends Component {
   }
 
   filteredStations = memoize(
-    (selectedNetworks, selectedVariables, selectedFrequencies, allStations) => {
+    (startDate, endDate, selectedNetworks, selectedVariables, selectedFrequencies, allStations) => {
       // console.log('filteredStations allStations', allStations)
       // console.log('filteredStations allVariables', this.state.allVariables)
+      console.log('test date', new Date())
       const selectedVariableUris = flow(
         map(selectedVariable => selectedVariable.contexts),
         flatten,
@@ -117,6 +125,16 @@ class PortalA extends Component {
         filter(
           station => {
             return (
+              (
+                endDate === null ||
+                !station.min_obs_time ||
+                endDate >= station.min_obs_time
+              ) &&
+              (
+                startDate === null ||
+                !station.max_obs_time ||
+                startDate <= station.max_obs_time
+              ) &&
               contains(
                 station.network_uri,
                 map(nw => nw.value.uri)(selectedNetworks)
@@ -136,6 +154,8 @@ class PortalA extends Component {
 
   render() {
     const filteredStations = this.filteredStations(
+      this.state.startDate,
+      this.state.endDate,
       this.state.selectedNetworks,
       this.state.selectedVariables,
       this.state.selectedFrequencies,
@@ -212,6 +232,25 @@ class PortalA extends Component {
             <Col lg={12} md={12} sm={12}>
               <Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>
               <Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col lg={12} md={12} sm={12}>
+              <DateSelector
+                value={this.state.startDate}
+                onChange={this.handleChangeStartDate}
+                label={'Start Date'}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col lg={12} md={12} sm={12}>
+              <DateSelector
+                value={this.state.endDate}
+                onChange={this.handleChangeEndDate}
+                label={'End Date'}
+              />
             </Col>
           </Row>
 
