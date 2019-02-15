@@ -1,5 +1,5 @@
 import {
-  reduce, assign, map, toPairs, flow, curry, groupBy,
+  reduce, assign, map, mapValues, toPairs, flow, curry, groupBy, isArray, isObject,
 } from 'lodash/fp';
 
 
@@ -23,6 +23,7 @@ export const composeWithRestArgs = curry(
 //  (and, not coincidentally, to pass the bulk of the work off to `groupBy`)
 //  is unsound and potentially inefficient, but very, very convenient. Shame.
 //  Sounder to use a WeakMap to accumulate the groups.
+// TODO: Remove unnecessary arg `list` and just return the function
 export const groupByGeneral = curry(
   (by, list) => flow(
     groupBy(item => JSON.stringify(by(item))),
@@ -30,6 +31,25 @@ export const groupByGeneral = curry(
     map(pair => ({ by: JSON.parse(pair[0]), items: pair[1] }))
   )(list)
 );
+
+
+// Deeply map a function over an item; deeply in the sense of recursively
+// if the item is an array or object:
+// If `item` is an array, apply `mapDeep(iteratee)` to its items using `map`.
+// If `item` is an object, apply `mapDeep(iteratee)` to its items using `mapValues`.
+// Otherwise `item` is not a collection, so just apply `iteratee` to it.
+export const mapDeep = curry(
+  (iteratee, item) => {
+    if (isArray(item)) {
+      return map(mapDeep(iteratee), item)
+    }
+    if (isObject(item)) {
+      return mapValues(mapDeep(iteratee), item)
+    }
+    return iteratee(item)
+  }
+);
+
 
 export const mapWithKey = map.convert({ cap: false });
 
