@@ -13,7 +13,7 @@ import './StationPopup.css';
 logger.configure({ active: true });
 
 
-const formatDate = s => s ? s.substr(0,10) : 'unknown';
+const formatDate = d => d ? d.toISOString().substr(0,10) : 'unknown';
 
 
 class StationPopup extends Component {
