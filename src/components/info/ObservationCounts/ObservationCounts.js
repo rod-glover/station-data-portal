@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Table } from 'react-bootstrap';
 import { flow, map, reduce } from 'lodash/fp';
 import { getObservationCounts } from
     '../../../data-services/station-data-service';
@@ -18,7 +19,7 @@ class ObservationCounts extends Component {
   };
 
   state = {
-    observationCounts: null,
+    countData: null,
   };
 
   static getDerivedStateFromProps(props, state) {
@@ -28,7 +29,7 @@ class ObservationCounts extends Component {
       // props.stations !== state.prevStations
     ) {
       return {
-        observationCounts: null,  // Signal need for new data
+        countData: null,  // Signal need for new data
         prevStartDate: props.startDate,
         prevEndDate: props.endDate,
         // prevStations: props.stations,  // Request doesn't depend on stations
@@ -44,7 +45,7 @@ class ObservationCounts extends Component {
   }
 
   componentDidUpdate() {
-    if (this.state.observationCounts === null) {
+    if (this.state.countData === null) {
       this.loadObservationCounts();
     }
   }
@@ -57,21 +58,55 @@ class ObservationCounts extends Component {
         start_date: startDate,
         end_date: endDate,
       }
-    }).then(response => this.setState({ observationCounts: response.data }));
+    }).then(response => this.setState({ countData: response.data }));
   }
 
   render() {
-    const { observationCounts } = this.state;
-    if (observationCounts === null) {
+    const { countData } = this.state;
+    if (countData === null) {
       return <p>Loading counts...</p>
     }
 
-    const counts = observationCounts.observationCounts;  // Yikes. Naming.
-    const totalForStations =
-      reduce((sum, station) => sum + counts[station.id], 0)
-        (this.props.stations);
+    const totalCounts = (counts, stations) => (
+      reduce((sum, station) => sum + (counts[station.id] || 0), 0)(stations)
+    );
+
+    const totalObservationCountsForStations =
+      totalCounts(countData.observationCounts, this.props.stations);
+    const totalClimatologyCountsForStations =
+      totalCounts(countData.climatologyCounts, this.props.stations);
+
     return (
-      <p>Total observations for selected stations: {totalForStations}</p>
+      <Table condensed size="sm">
+        <thead>
+        <tr>
+          <th colSpan={2}>Summary for selected stations</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <th>Number of stations</th>
+          <td className="text-right">
+            {this.props.stations.length}
+          </td>
+        </tr>
+        <tr>
+          <th>Total observations</th>
+          <td className="text-right">
+            {totalObservationCountsForStations.toLocaleString()}
+          </td>
+        </tr>
+        <tr>
+          <th>Total climatologies</th>
+          <td className="text-right">
+            {totalClimatologyCountsForStations.toLocaleString()}
+          </td>
+        </tr>
+        </tbody>
+      </Table>
+    )
+    return (
+      <p>Total observations for selected stations: {totalObservationCountsForStations}</p>
     );
   }
 }
