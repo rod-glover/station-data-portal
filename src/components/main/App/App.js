@@ -10,12 +10,14 @@ import Header from '../Header/Header';
 
 import PortalA from '../PortalA';
 import PortalB from '../PortalB';
+import PortalC from '../PortalC';
 
 import './App.css';
 
 const navSpec = [
   { label: 'Version A', path: 'A', component: PortalA },
   { label: 'Version B', path: 'B', component: PortalB },
+  { label: 'Version C', path: 'C', component: PortalC },
 ];
 
 

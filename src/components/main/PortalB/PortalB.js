@@ -31,6 +31,7 @@ import {
 import VariableSelector from '../../selectors/VariableSelector';
 import JSONstringify from '../../util/JSONstringify';
 import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelector';
+import { stationFilter } from '../../../utils/portals-common';
 
 logger.configure({ active: true });
 
@@ -98,43 +99,12 @@ class Portal extends Component {
     .then(response => this.setState({ allStations: response.data }));
   }
 
-  filteredStations = memoize(
-    (selectedNetworks, selectedVariables, selectedFrequencies, allStations) => {
-      // console.log('filteredStations allStations', allStations)
-      // console.log('filteredStations allVariables', this.state.allVariables)
-      const selectedVariableUris = flow(
-        map(selectedVariable => selectedVariable.contexts),
-        flatten,
-        map(context => context.uri),
-        uniq,
-      )(selectedVariables);
-      // console.log('filteredStations selectedVariableUris', selectedVariableUris)
-      const selectedFrequencyValues =
-        map(option => option.value)(selectedFrequencies);
-      // console.log('filteredStations selectedVariableUris', selectedVariableUris)
-      return flow(
-        filter(
-          station => {
-            return (
-              contains(
-                station.network_uri,
-                map(nw => nw.value.uri)(selectedNetworks)
-              ) && (
-                station.histories && station.histories[0] &&
-                intersection(station.histories[0].variable_uris, selectedVariableUris).length > 0
-              ) && (
-                station.histories && station.histories[0] &&
-                contains(station.histories[0].freq, selectedFrequencyValues)
-              )
-            )
-          }
-        ),
-      )(allStations);
-    }
-  );
+  stationFilter = memoize(stationFilter);
 
   render() {
-    const filteredStations = this.filteredStations(
+    const filteredStations = this.stationFilter(
+      null,
+      null,
       this.state.selectedNetworks,
       this.state.selectedVariables,
       this.state.selectedFrequencies,

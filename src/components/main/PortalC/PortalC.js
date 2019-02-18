@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, ControlLabel } from 'react-bootstrap';
+import { Row, Col, Button } from 'react-bootstrap';
 import { FeatureGroup, LayerGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import memoize from 'memoize-one';
@@ -18,7 +18,7 @@ import {
 
 import { BCBaseMap } from 'pcic-react-leaflet-components';
 
-import './PortalA.css';
+import './PortalC.css';
 
 import logger from '../../../logger';
 import NetworkSelector from '../../selectors/NetworkSelector';
@@ -31,8 +31,8 @@ import {
 import VariableSelector from '../../selectors/VariableSelector';
 import JSONstringify from '../../util/JSONstringify';
 import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelector';
-import ObservationCounts from '../../info/ObservationCounts';
 import DateSelector from '../../selectors/DateSelector';
+import ObservationCounts from '../../info/ObservationCounts';
 import { stationFilter } from '../../../utils/portals-common';
 
 logger.configure({ active: true });
@@ -51,7 +51,7 @@ const commonSelectorStyles = {
 };
 
 
-class PortalA extends Component {
+class Portal extends Component {
   state = {
     startDate: null,
     endDate: null,
@@ -111,8 +111,8 @@ class PortalA extends Component {
 
   render() {
     const filteredStations = this.stationFilter(
-      this.state.startDate,
-      this.state.endDate,
+      null,
+      null,
       this.state.selectedNetworks,
       this.state.selectedVariables,
       this.state.selectedFrequencies,
@@ -141,27 +141,81 @@ class PortalA extends Component {
     )(selections);
 
     return (
-      <Row className="PortalA">
-        <Col lg={9} md={8} sm={12} className="Map">
-          <BCBaseMap viewport={BCBaseMap.initialViewport}>
-            <FeatureGroup>
-              <EditControl
-                position={'topleft'}
+      <React.Fragment>
+        <Row>
+          <Col lg={2} md={2} sm={2}>
+            <Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>
+            <Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>
+            <div>
+              <DateSelector
+                value={this.state.startDate}
+                onChange={this.handleChangeStartDate}
+                label={'Start Date'}
               />
-            </FeatureGroup>
-            <LayerGroup>
-              <StationMarkers
-                stations={filteredStations}
-                allNetworks={this.state.allNetworks}
-                allVariables={this.state.allVariables}
+            </div>
+            <div>
+              <DateSelector
+                value={this.state.endDate}
+                onChange={this.handleChangeEndDate}
+                label={'End Date'}
               />
-            </LayerGroup>
-          </BCBaseMap>
-        </Col>
+            </div>
+          </Col>
 
-        <Col lg={3} md={4} sm={12} className="Data">
-          <Row className={'text-left'}>
-            <Col lg={12} md={12} sm={12}>
+          <Col lg={4} md={4} sm={4}>
+            <NetworkSelector
+              allNetworks={this.state.allNetworks}
+              onReady={this.handleNetworkSelectorReady}
+              value={this.state.selectedNetworks}
+              onChange={this.handleChangeNetwork}
+              isSearchable
+              isClearable={false}
+              styles={commonSelectorStyles}
+            />
+            {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
+          </Col>
+          <Col lg={4} md={4} sm={4}>
+            <VariableSelector
+              allVariables={this.state.allVariables}
+              onReady={this.handleVariableSelectorReady}
+              value={this.state.selectedVariables}
+              onChange={this.handleChangeVariable}
+              isSearchable
+              isClearable={false}
+              styles={commonSelectorStyles}
+            />
+            {/*<JSONstringify object={this.state.selectedVariables}/>*/}
+          </Col>
+          <Col lg={2} md={2} sm={2}>
+            <FrequencySelector
+              onReady={this.handleFrequencySelectorReady}
+              value={this.state.selectedFrequencies}
+              onChange={this.handleChangeFrequency}
+              isClearable={false}
+              styles={commonSelectorStyles}
+            />
+            {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
+          </Col>
+        </Row>
+
+        <Row>
+          <Col lg={9} md={8} sm={12} className="Map">
+            <BCBaseMap viewport={BCBaseMap.initialViewport}>
+              <FeatureGroup>
+                <EditControl
+                  position={'topleft'}
+                />
+              </FeatureGroup>
+              <LayerGroup>
+                <StationMarkers
+                  stations={filteredStations}
+                  allNetworks={this.state.allNetworks}
+                  allVariables={this.state.allVariables}
+                />
+              </LayerGroup>
+            </BCBaseMap>
+          </Col>
+          <Col lg={3} md={4} sm={12} className="Data">
               <p>{
                 this.state.allStations ?
                   `${this.state.allStations.length} stations available.` :
@@ -182,85 +236,13 @@ class PortalA extends Component {
                 unselectedThings &&
                 <p>You haven't selected any {unselectedThings}.</p>
               }
-            </Col>
-          </Row>
 
-          <Row className={'text-left'}>
-            <Col lg={12} md={12} sm={12}>
-              <Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>
-              <Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col lg={12} md={12} sm={12}>
-              <DateSelector
-                value={this.state.startDate}
-                onChange={this.handleChangeStartDate}
-                label={'Start Date'}
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col lg={12} md={12} sm={12}>
-              <DateSelector
-                value={this.state.endDate}
-                onChange={this.handleChangeEndDate}
-                label={'End Date'}
-              />
-            </Col>
-          </Row>
-
-          <Row className={'text-left'}>
-            <Col lg={12} md={12} sm={12}>
-              <NetworkSelector
-                allNetworks={this.state.allNetworks}
-                onReady={this.handleNetworkSelectorReady}
-                value={this.state.selectedNetworks}
-                onChange={this.handleChangeNetwork}
-                isSearchable
-                isClearable={false}
-                styles={commonSelectorStyles}
-              />
-              {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
-            </Col>
-          </Row>
-
-          <Row className={'text-left'}>
-            <Col lg={12} md={12} sm={12}>
-              <VariableSelector
-                allVariables={this.state.allVariables}
-                onReady={this.handleVariableSelectorReady}
-                value={this.state.selectedVariables}
-                onChange={this.handleChangeVariable}
-                isSearchable
-                isClearable={false}
-                styles={commonSelectorStyles}
-              />
-              {/*<JSONstringify object={this.state.selectedVariables}/>*/}
-            </Col>
-          </Row>
-
-          <Row className={'text-left'}>
-            <Col lg={12} md={12} sm={12}>
-              <FrequencySelector
-                onReady={this.handleFrequencySelectorReady}
-                value={this.state.selectedFrequencies}
-                onChange={this.handleChangeFrequency}
-                isClearable={false}
-                styles={commonSelectorStyles}
-              />
-              {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
-            </Col>
-          </Row>
-
-          <Row>
             <ObservationCounts stations={filteredStations}/>
-          </Row>
-        </Col>
-      </Row>
+          </Col>
+        </Row>
+      </React.Fragment>
     );
   }
 }
 
-export default PortalA;
+export default Portal;

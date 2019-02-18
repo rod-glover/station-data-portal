@@ -37,7 +37,6 @@ export function getStations(config) {
     {
       transformResponse: axios.defaults.transformResponse.concat(
         mapDeep(transformIso8601Date)
-        // map(mapValues(transformIso8601Date))
       ),
       ...config,
     },
