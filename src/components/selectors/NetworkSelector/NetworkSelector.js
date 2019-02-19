@@ -56,6 +56,7 @@ class NetworkSelector extends Component {
       return {
         ...styles,
         backgroundColor: isDisabled ? null : color.alpha(0.5).css(),
+        borderBottom: '1px solid #aaa',
       };
     },
     multiValue: (styles, { data: { value, isDisabled } }) => {

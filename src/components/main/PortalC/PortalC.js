@@ -39,6 +39,12 @@ logger.configure({ active: true });
 
 
 const commonSelectorStyles = {
+  menu: (provided) => {
+    return {
+      ...provided,
+      zIndex: 999,
+    }
+  },
   valueContainer: (provided, state) => ({
     ...provided,
     maxHeight: '10em',
@@ -48,6 +54,13 @@ const commonSelectorStyles = {
     ...provided,
     width: '2em',
   }),
+  option: (styles) => {
+    return {
+      ...styles,
+      padding: '0.5em',
+      fontSize: '0.9em',
+    }
+  }
 };
 
 
@@ -111,8 +124,8 @@ class Portal extends Component {
 
   render() {
     const filteredStations = this.stationFilter(
-      null,
-      null,
+      this.state.startDate,
+      this.state.endDate,
       this.state.selectedNetworks,
       this.state.selectedVariables,
       this.state.selectedFrequencies,

@@ -25,6 +25,15 @@ class DateSelector extends Component {
           onChange={this.props.onChange}
           dateFormat={'yyyy-MM-dd'}
           isClearable
+          renderCustomHeader={({
+                                 date,
+                                 changeYear,
+                                 changeMonth,
+                                 decreaseMonth,
+                                 increaseMonth,
+                                 prevMonthButtonDisabled,
+                                 nextMonthButtonDisabled
+                               }) => {}}
         />
       </React.Fragment>
     );

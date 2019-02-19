@@ -39,6 +39,12 @@ logger.configure({ active: true });
 
 
 const commonSelectorStyles = {
+  menu: (styles) => {
+    return {
+      ...styles,
+      zIndex: 999,
+    }
+  },
   valueContainer: (provided, state) => ({
     ...provided,
     maxHeight: '10em',
