@@ -32,6 +32,7 @@ import VariableSelector from '../../selectors/VariableSelector';
 import JSONstringify from '../../util/JSONstringify';
 import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelector';
 import DateSelector from '../../selectors/DateSelector';
+import FileFormatSelector from '../../selectors/FileFormatSelector';
 import ObservationCounts from '../../info/ObservationCounts';
 import { stationFilter } from '../../../utils/portals-common';
 
@@ -114,7 +115,7 @@ class Portal extends Component {
     getStations({
       params: {
         // limit: 1000,
-        stride: 50,  // load every 10th station
+        stride: 10,  // load every 10th station
       },
     })
     .then(response => this.setState({ allStations: response.data }));
@@ -228,29 +229,36 @@ class Portal extends Component {
               </LayerGroup>
             </BCBaseMap>
           </Col>
+
           <Col lg={3} md={4} sm={12} className="Data">
-              <p>{
-                this.state.allStations ?
-                  `${this.state.allStations.length} stations available.` :
-                  `Loading station info ... (this may take a couple of minutes)`
-              }</p>
-              <p>{`
-              Available stations are filtered by
-              the network they are part of,
-              the variable(s) they observe,
-              and the frequency of obervation.
-              Stations matching selected criteria are displayed on the map.
-              `}</p>
-              {
-                this.state.allStations &&
-                <p>{`${filteredStations.length || 'No'} stations match criteria.`}</p>
-              }
-              {
-                unselectedThings &&
-                <p>You haven't selected any {unselectedThings}.</p>
-              }
+            <h1>Selection summary</h1>
+
+            <p>{
+              this.state.allStations ?
+                `${this.state.allStations.length} stations available.` :
+                `Loading station info ... (this may take a couple of minutes)`
+            }</p>
+            <p>{`
+            Available stations are filtered by
+            the network they are part of,
+            the variable(s) they observe,
+            and the frequency of obervation.
+            Stations matching selected criteria are displayed on the map.
+            `}</p>
+            {
+              this.state.allStations &&
+              <p>{`${filteredStations.length || 'No'} stations match criteria.`}</p>
+            }
+            {
+              unselectedThings &&
+              <p>You haven't selected any {unselectedThings}.</p>
+            }
 
             <ObservationCounts stations={filteredStations}/>
+
+            <h1>Download data</h1>
+
+            <FileFormatSelector/>
           </Col>
         </Row>
       </React.Fragment>
