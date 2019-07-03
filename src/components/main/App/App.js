@@ -48,7 +48,7 @@ export default class App extends Component {
                         <Route path={`/${path}`} component={component}/>
                       ))
                     }
-                    <Redirect to={'/B'}/>
+                    <Redirect to={'/C'}/>
                   </Switch>
               </Grid>
             </div>
