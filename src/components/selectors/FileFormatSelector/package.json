@@ -1,0 +1,6 @@
+{
+  "name": "FileFormatSelector",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./FileFormatSelector.js"
+}
