@@ -7,7 +7,7 @@ import './Template.css';
 
 logger.configure({ active: true });
 
-class Template extends Component {
+export default class Template extends Component {
   static propTypes = {
   };
 
@@ -20,4 +20,3 @@ class Template extends Component {
   }
 }
 
-export default Template;
