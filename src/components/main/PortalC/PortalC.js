@@ -1,20 +1,18 @@
 import React, { Component } from 'react';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Row, Col, Button, Tabs, Tab, Table } from 'react-bootstrap';
 import { FeatureGroup, LayerGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import memoize from 'memoize-one';
-import {
-  flow,
-  map,
-  filter,
-  flatten,
-  uniq,
-  intersection,
-  contains,
-  pick,
-  join,
-  tap
-} from 'lodash/fp';
+import flow from 'lodash/fp/flow';
+import map from 'lodash/fp/map';
+import filter from 'lodash/fp/filter';
+import flatten from 'lodash/fp/flatten';
+import uniq from 'lodash/fp/uniq';
+import intersection from 'lodash/fp/intersection';
+import contains from 'lodash/fp/contains';
+import pick from 'lodash/fp/pick';
+import join from 'lodash/fp/join';
+import tap from 'lodash/fp/tap';
 
 import { BCBaseMap } from 'pcic-react-leaflet-components';
 
@@ -34,7 +32,9 @@ import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelect
 import DateSelector from '../../selectors/DateSelector';
 import FileFormatSelector from '../../selectors/FileFormatSelector';
 import ObservationCounts from '../../info/ObservationCounts';
-import { stationFilter } from '../../../utils/portals-common';
+import { stationFilter, toQueryString } from '../../../utils/portals-common';
+import ButtonToolbar from 'react-bootstrap/es/ButtonToolbar';
+import StationMetadata from '../../info/StationMetadata';
 
 logger.configure({ active: true });
 
@@ -82,6 +82,8 @@ class Portal extends Component {
     frequencyActions: {},
 
     allStations: null,
+
+    fileFormat: undefined,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
@@ -109,6 +111,8 @@ class Portal extends Component {
     this.state.frequencyActions.selectNone();
   };
 
+  handleChangeFileFormat = this.handleChange.bind(this, 'fileFormat');
+
   componentDidMount() {
     getNetworks().then(response => this.setState({ allNetworks: response.data }));
     getVariables().then(response => this.setState({ allVariables: response.data }));
@@ -122,6 +126,14 @@ class Portal extends Component {
   }
 
   stationFilter = memoize(stationFilter);
+
+  downloadTarget = what =>
+    `https://data.pacificclimate.org/data/pcds/agg/?${toQueryString({
+      'from-date': this.state.startDate,
+      'to-date': this.state.endDate,
+      'input-polygon': '',
+      'input-var': this.state.selectedVariables[0],
+    })}`;
 
   render() {
     const filteredStations = this.stationFilter(
@@ -213,7 +225,7 @@ class Portal extends Component {
         </Row>
 
         <Row>
-          <Col lg={9} md={8} sm={12} className="Map">
+          <Col lg={8} md={6} sm={12} className="Map">
             <BCBaseMap viewport={BCBaseMap.initialViewport}>
               <FeatureGroup>
                 <EditControl
@@ -230,35 +242,65 @@ class Portal extends Component {
             </BCBaseMap>
           </Col>
 
-          <Col lg={3} md={4} sm={12} className="Data">
-            <h1>Selection summary</h1>
+          <Col lg={4} md={6} sm={12} className="Data">
+            <Row>
+              <Tabs defaultActiveKey={2}>
+                <Tab eventKey={1} title={'Download Data'}>
+                  <h1>Station Data</h1>
 
-            <p>{
-              this.state.allStations ?
-                `${this.state.allStations.length} stations available.` :
-                `Loading station info ... (this may take a couple of minutes)`
-            }</p>
-            <p>{`
+                  <FileFormatSelector
+                    value={this.state.fileFormat}
+                    onChange={this.handleChangeFileFormat}
+                  />
+
+                  <ButtonToolbar>
+                    <Button href={this.downloadTarget('climatology')}>
+                      Download Climatology
+                    </Button>
+                    <Button disabled>
+                      Download Timeseries
+                    </Button>
+                  </ButtonToolbar>
+
+                  <h1>Overview</h1>
+                  <p>{
+                    this.state.allStations ?
+                      `${this.state.allStations.length} stations available.` :
+                      `Loading station info ... (this may take a couple of minutes)`
+                  }</p>
+                  <p>{`
             Available stations are filtered by
             the network they are part of,
             the variable(s) they observe,
             and the frequency of obervation.
             Stations matching selected criteria are displayed on the map.
             `}</p>
-            {
-              this.state.allStations &&
-              <p>{`${filteredStations.length || 'No'} stations match criteria.`}</p>
-            }
-            {
-              unselectedThings &&
-              <p>You haven't selected any {unselectedThings}.</p>
-            }
+                  {
+                    this.state.allStations &&
+                    <p>{`${filteredStations.length || 'No'} stations match criteria.`}</p>
+                  }
+                  {
+                    unselectedThings &&
+                    <p>You haven't selected any {unselectedThings}.</p>
+                  }
 
-            <ObservationCounts stations={filteredStations}/>
+                  <ObservationCounts stations={filteredStations}/>
+                </Tab>
 
-            <h1>Download data</h1>
+                <Tab eventKey={2} title={'Stations and Metadata'}>
+                  <Button disabled>
+                    Download Metadata
+                  </Button>
 
-            <FileFormatSelector/>
+                  <p>{filteredStations.length} stations selected</p>
+                  <StationMetadata
+                    stations={filteredStations}
+                    allNetworks={this.state.allNetworks}
+                  />
+
+                </Tab>
+              </Tabs>
+            </Row>
           </Col>
         </Row>
       </React.Fragment>
