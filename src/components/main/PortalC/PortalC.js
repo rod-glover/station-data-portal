@@ -32,9 +32,10 @@ import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelect
 import DateSelector from '../../selectors/DateSelector';
 import FileFormatSelector from '../../selectors/FileFormatSelector';
 import ObservationCounts from '../../info/ObservationCounts';
-import { stationFilter, toQueryString } from '../../../utils/portals-common';
+import { stationFilter } from '../../../utils/portals-common';
 import ButtonToolbar from 'react-bootstrap/es/ButtonToolbar';
 import StationMetadata from '../../info/StationMetadata';
+import { makeURI } from '../../../utils/uri';
 
 logger.configure({ active: true });
 
@@ -128,12 +129,12 @@ class Portal extends Component {
   stationFilter = memoize(stationFilter);
 
   downloadTarget = what =>
-    `https://data.pacificclimate.org/data/pcds/agg/?${toQueryString({
+    makeURI('https://data.pacificclimate.org/data/pcds/agg/', {
       'from-date': this.state.startDate,
       'to-date': this.state.endDate,
       'input-polygon': '',
       'input-var': this.state.selectedVariables[0],
-    })}`;
+    });
 
   render() {
     const filteredStations = this.stationFilter(
