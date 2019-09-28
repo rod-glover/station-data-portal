@@ -24,7 +24,7 @@ const options = [
   },
 ];
 
-class FileFormatSelector extends Component {
+export default class FileFormatSelector extends Component {
   static propTypes = {
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
@@ -32,13 +32,16 @@ class FileFormatSelector extends Component {
 
   state = {};
 
+  componentDidMount() {
+    this.props.onChange(options[0])
+  }
+
   render() {
     return (
       <React.Fragment>
         <div><ControlLabel>Output format</ControlLabel></div>
         <Select
           options={options}
-          defaultValue={options[0]}
           value={this.props.value}
           onChange={this.props.onChange}
         />
@@ -46,5 +49,3 @@ class FileFormatSelector extends Component {
     );
   }
 }
-
-export default FileFormatSelector;
