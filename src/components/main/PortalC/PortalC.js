@@ -7,6 +7,7 @@ import flow from 'lodash/fp/flow';
 import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
 import flatten from 'lodash/fp/flatten';
+import get from 'lodash/fp/get';
 import uniq from 'lodash/fp/uniq';
 import intersection from 'lodash/fp/intersection';
 import contains from 'lodash/fp/contains';
@@ -36,6 +37,12 @@ import { stationFilter } from '../../../utils/portals-common';
 import ButtonToolbar from 'react-bootstrap/es/ButtonToolbar';
 import StationMetadata from '../../info/StationMetadata';
 import { makeURI } from '../../../utils/uri';
+import {
+  date2pdpFormat,
+  networkSelectorOptions2pdpFormat,
+  variableSelectorOptions2pdpFormat,
+  frequencyOptions2pdpFormat,
+} from '../../../utils/pdp-backend';
 
 logger.configure({ active: true });
 
@@ -130,10 +137,15 @@ class Portal extends Component {
 
   downloadTarget = what =>
     makeURI('https://data.pacificclimate.org/data/pcds/agg/', {
-      'from-date': this.state.startDate,
-      'to-date': this.state.endDate,
+      'from-date': date2pdpFormat(this.state.startDate),
+      'to-date': date2pdpFormat(this.state.endDate),
+      'network-name': networkSelectorOptions2pdpFormat(this.state.selectedNetworks),
+      'input-vars': variableSelectorOptions2pdpFormat(this.state.selectedVariables),
+      'input-freq': frequencyOptions2pdpFormat(this.state.selectedFrequencies),
       'input-polygon': '',
-      'input-var': this.state.selectedVariables[0],
+      'only-with-climatology': '',
+      [`download-${what}`]: what,
+      'data-format': get('value')(this.state.fileFormat),
     });
 
   render() {
@@ -245,7 +257,7 @@ class Portal extends Component {
 
           <Col lg={4} md={6} sm={12} className="Data">
             <Row>
-              <Tabs defaultActiveKey={2}>
+              <Tabs defaultActiveKey={1}>
                 <Tab eventKey={1} title={'Download Data'}>
                   <h1>Station Data</h1>
 
@@ -255,6 +267,8 @@ class Portal extends Component {
                   />
 
                   <ButtonToolbar>
+                    <JSONstringify object={this.downloadTarget('climatology')}/>
+                    <div>length: {this.downloadTarget('climatology').length}</div>
                     <Button href={this.downloadTarget('climatology')}>
                       Download Climatology
                     </Button>
