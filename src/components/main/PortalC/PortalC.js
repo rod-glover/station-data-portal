@@ -27,6 +27,7 @@ import {
   getVariables,
   getStations,
 } from '../../../data-services/station-data-service';
+import { dataDownloadTarget } from '../../../data-services/pdp-data-service';
 import VariableSelector from '../../selectors/VariableSelector';
 import JSONstringify from '../../util/JSONstringify';
 import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelector';
@@ -36,13 +37,7 @@ import ObservationCounts from '../../info/ObservationCounts';
 import { stationFilter } from '../../../utils/portals-common';
 import ButtonToolbar from 'react-bootstrap/es/ButtonToolbar';
 import StationMetadata from '../../info/StationMetadata';
-import { makeURI } from '../../../utils/uri';
-import {
-  date2pdpFormat,
-  networkSelectorOptions2pdpFormat,
-  variableSelectorOptions2pdpFormat,
-  frequencyOptions2pdpFormat,
-} from '../../../utils/pdp-backend';
+
 
 logger.configure({ active: true });
 
@@ -135,18 +130,17 @@ class Portal extends Component {
 
   stationFilter = memoize(stationFilter);
 
-  downloadTarget = what =>
-    makeURI('https://data.pacificclimate.org/data/pcds/agg/', {
-      'from-date': date2pdpFormat(this.state.startDate),
-      'to-date': date2pdpFormat(this.state.endDate),
-      'network-name': networkSelectorOptions2pdpFormat(this.state.selectedNetworks),
-      'input-vars': variableSelectorOptions2pdpFormat(this.state.selectedVariables),
-      'input-freq': frequencyOptions2pdpFormat(this.state.selectedFrequencies),
-      'input-polygon': '',
-      'only-with-climatology': '',
-      [`download-${what}`]: what,
-      'data-format': get('value')(this.state.fileFormat),
-    });
+  downloadTarget = dataCategory => dataDownloadTarget({
+    startDate: this.state.startDate,
+    endDate: this.state.endDate,
+    networks: this.state.selectedNetworks,
+    variables: this.state.selectedVariables,
+    frequencies: this.state.selectedFrequencies,
+    polygon: '',
+    onlyWithClimatology: false,
+    dataCategory,
+    dataFormat: this.state.fileFormat,
+  });
 
   render() {
     const filteredStations = this.stationFilter(
