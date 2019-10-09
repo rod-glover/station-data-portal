@@ -36,6 +36,10 @@ describe('networkSelectorOptions2pdpFormat', () => {
 
 describe('variable2PdpVariableIdentifier', () => {
   it.each([
+    [ { standard_name: 'standard_name', },
+      'standard_name' ],
+    [ { standard_name: 'standard_name', cell_method: null, },
+      'standard_name' ],
     [ { standard_name: 'standard_name', cell_method: '' },
       'standard_name' ],
     [ { standard_name: 'standard_name', cell_method: 'cell_method' },
@@ -123,11 +127,11 @@ describe('dataDownloadTarget', () => {
       dataFormat: dataFormatOption('format'),
     });
     expect(target).toMatch(/^REACT_APP_PDP_DATA_URL\/pcds\/agg\/\?/);
-    expect(target).toMatch(regex('from-date=2000/01/01'));
-    expect(target).toMatch(regex('to-date=2010/12/31'));
-    expect(target).toMatch(regex('network-name=nw1,nw2'));
-    expect(target).toMatch(regex('input-vars=var1_snvar1_cm,var2_snvar2_cm'));
-    expect(target).toMatch(regex('input-freq=freq1,freq2'));
+    expect(target).toMatch(regex('from-date=2000%2F01%2F01'));
+    expect(target).toMatch(regex('to-date=2010%2F12%2F31'));
+    expect(target).toMatch(regex('network-name=nw1%2Cnw2'));
+    expect(target).toMatch(regex('input-vars=var1_snvar1_cm%2Cvar2_snvar2_cm'));
+    expect(target).toMatch(regex('input-freq=freq1%2Cfreq2'));
     expect(target).toMatch(regex('input-polygon=POLYGON'));
     expect(target).toMatch(regex('only-with-climatology=only-with-climatology'));
     expect(target).toMatch(regex('download-category=Category'));
