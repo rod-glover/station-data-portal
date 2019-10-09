@@ -11,6 +11,10 @@ import {
 
 
 describe('date2pdpFormat', () => {
+  it('works for null date', () => {
+    expect(date2pdpFormat(null)).toBe('');
+  });
+
   it.each([
     [2000, 1, 1, '2000/01/01'],
     [2000, 10, 1, '2000/10/01'],
@@ -114,7 +118,7 @@ describe('dataDownloadTarget', () => {
 
   const regex = s => new RegExp(escapeRegExp(s));
 
-  it('works', () => {
+  it('works for clipToDate and onlyWithClimatology true', () => {
     const target = dataDownloadTarget({
       startDate: new Date(2000, 0, 1),
       endDate: new Date(2010, 11, 31),
@@ -122,6 +126,7 @@ describe('dataDownloadTarget', () => {
       variables: map(variableOption)([['var1'], ['var2']]),
       frequencies: map(frequencyOption)(['freq1', 'freq2']),
       polygon: 'POLYGON',
+      clipToDate: true,
       onlyWithClimatology: true,
       dataCategory: 'category',
       dataFormat: dataFormatOption('format'),
@@ -133,7 +138,34 @@ describe('dataDownloadTarget', () => {
     expect(target).toMatch(regex('input-vars=var1_snvar1_cm%2Cvar2_snvar2_cm'));
     expect(target).toMatch(regex('input-freq=freq1%2Cfreq2'));
     expect(target).toMatch(regex('input-polygon=POLYGON'));
+    expect(target).toMatch(regex('cliptodate=cliptodate'));
     expect(target).toMatch(regex('only-with-climatology=only-with-climatology'));
+    expect(target).toMatch(regex('download-category=Category'));
+    expect(target).toMatch(regex('data-format=format'));
+  });
+
+  it('works for clipToDate and onlyWithClimatology false', () => {
+    const target = dataDownloadTarget({
+      startDate: new Date(2000, 0, 1),
+      endDate: new Date(2010, 11, 31),
+      networks: map(networkOption)(['nw1', 'nw2']),
+      variables: map(variableOption)([['var1'], ['var2']]),
+      frequencies: map(frequencyOption)(['freq1', 'freq2']),
+      polygon: 'POLYGON',
+      clipToDate: false,
+      onlyWithClimatology: false,
+      dataCategory: 'category',
+      dataFormat: dataFormatOption('format'),
+    });
+    expect(target).toMatch(/^REACT_APP_PDP_DATA_URL\/pcds\/agg\/\?/);
+    expect(target).toMatch(regex('from-date=2000%2F01%2F01'));
+    expect(target).toMatch(regex('to-date=2010%2F12%2F31'));
+    expect(target).toMatch(regex('network-name=nw1%2Cnw2'));
+    expect(target).toMatch(regex('input-vars=var1_snvar1_cm%2Cvar2_snvar2_cm'));
+    expect(target).toMatch(regex('input-freq=freq1%2Cfreq2'));
+    expect(target).toMatch(regex('input-polygon=POLYGON'));
+    expect(target).not.toMatch(regex('cliptodate'));
+    expect(target).toMatch(regex('only-with-climatology='));
     expect(target).toMatch(regex('download-category=Category'));
     expect(target).toMatch(regex('data-format=format'));
   });
