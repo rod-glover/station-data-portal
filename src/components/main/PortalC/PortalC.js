@@ -261,13 +261,11 @@ class Portal extends Component {
                   />
 
                   <ButtonToolbar>
-                    <JSONstringify object={this.downloadTarget('climatology')}/>
-                    <div>length: {this.downloadTarget('climatology').length}</div>
+                    <Button href={this.downloadTarget('timeseries')}>
+                      Download Timeseries
+                    </Button>
                     <Button href={this.downloadTarget('climatology')}>
                       Download Climatology
-                    </Button>
-                    <Button disabled>
-                      Download Timeseries
                     </Button>
                   </ButtonToolbar>
 
