@@ -12,7 +12,7 @@ logger.configure({ active: true });
 const options = [
   {
     label: 'NetCDF',
-    value: 'netcdf',
+    value: 'nc',
   },
   {
     label: 'CSV/ASCII',
