@@ -9,12 +9,11 @@ import join from 'lodash/fp/join';
 export const qsStringify =
     flow(
         toPairs,
-        map(([key, value]) => `${key}=${value}`),
+        map(([key, value]) => `${key}=${encodeURIComponent(value)}`),
         join('&')
     );
 
 
 // Make a URI by joining the `url` to a query string formed from object
-// `params`. Result is URI-encoded.
-export const makeURI = (url, params) =>
-    encodeURI(`${url}?${qsStringify(params)}`);
+// `params`.
+export const makeURI = (url, params) => `${url}?${qsStringify(params)}`;
