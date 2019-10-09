@@ -32,7 +32,7 @@ export const networkSelectorOptions2pdpFormat = flow(
 // module `pdp_util.filters` and CRMP database view `collapsed_vars_v`,
 // column `vars`.
 export const variable2PdpVariableIdentifier = ({ standard_name, cell_method }) =>
-  standard_name + cell_method.replace(/time: /g, '_');
+  standard_name + (cell_method ? cell_method.replace(/time: /g, '_') : '');
 
 const variableSelectorOption2pdpFormat = flow(
   get('contexts'),
