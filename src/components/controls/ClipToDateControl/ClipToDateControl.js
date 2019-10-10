@@ -13,11 +13,9 @@ export default class ClipToDateControl extends Component {
   render() {
     const { value, ...rest } = this.props;
     return (
-      <React.Fragment>
-        <Checkbox checked={value} {...rest}>
-          <ControlLabel>Clip time series to filter date range</ControlLabel>
-        </Checkbox>
-      </React.Fragment>
+      <Checkbox checked={value} {...rest}>
+        <ControlLabel>Clip time series to filter date range</ControlLabel>
+      </Checkbox>
     );
   }
 }
