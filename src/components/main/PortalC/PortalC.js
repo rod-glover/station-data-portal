@@ -38,6 +38,8 @@ import ObservationCounts from '../../info/ObservationCounts';
 import { stationFilter } from '../../../utils/portals-common';
 import ButtonToolbar from 'react-bootstrap/es/ButtonToolbar';
 import StationMetadata from '../../info/StationMetadata';
+import OnlyWithClimatologyControl
+  from '../../controls/OnlyWithClimatologyControl';
 
 
 logger.configure({ active: true });
@@ -85,6 +87,8 @@ class Portal extends Component {
     selectedFrequencies: [],
     frequencyActions: {},
 
+    onlyWithClimatology: false,
+
     allStations: null,
 
     fileFormat: undefined,
@@ -92,6 +96,8 @@ class Portal extends Component {
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
+  toggleBoolean = name =>
+    this.setState(state => ({ [name]: !state[name] }));
 
   handleChangeStartDate = this.handleChange.bind(this, 'startDate');
   handleChangeEndDate = this.handleChange.bind(this, 'endDate');
@@ -118,8 +124,9 @@ class Portal extends Component {
 
   handleChangeFileFormat = this.handleChange.bind(this, 'fileFormat');
 
-  toggleClipToDate = () => 
-    this.setState(({ clipToDate }) => ({ clipToDate: !clipToDate }));
+  toggleClipToDate = this.toggleBoolean.bind(this, 'clipToDate');
+  toggleOnlyWithClimatology =
+    this.toggleBoolean.bind(this, 'onlyWithClimatology');
 
   componentDidMount() {
     getNetworks().then(response => this.setState({ allNetworks: response.data }));
@@ -143,7 +150,7 @@ class Portal extends Component {
     frequencies: this.state.selectedFrequencies,
     polygon: '',
     clipToDate: this.state.clipToDate,
-    onlyWithClimatology: false,
+    onlyWithClimatology: this.state.onlyWithClimatology,
     dataCategory,
     dataFormat: this.state.fileFormat,
   });
@@ -155,7 +162,10 @@ class Portal extends Component {
       this.state.selectedNetworks,
       this.state.selectedVariables,
       this.state.selectedFrequencies,
-      this.state.allStations
+      this.state.onlyWithClimatology,
+      this.state.allNetworks,
+      this.state.allVariables,
+      this.state.allStations,
     );
 
     const selections = [
@@ -201,7 +211,7 @@ class Portal extends Component {
             </div>
           </Col>
 
-          <Col lg={4} md={4} sm={4}>
+          <Col lg={3} md={3} sm={3}>
             <NetworkSelector
               allNetworks={this.state.allNetworks}
               onReady={this.handleNetworkSelectorReady}
@@ -213,7 +223,7 @@ class Portal extends Component {
             />
             {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
           </Col>
-          <Col lg={4} md={4} sm={4}>
+          <Col lg={3} md={3} sm={3}>
             <VariableSelector
               allVariables={this.state.allVariables}
               onReady={this.handleVariableSelectorReady}
@@ -234,6 +244,12 @@ class Portal extends Component {
               styles={commonSelectorStyles}
             />
             {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
+          </Col>
+          <Col lg={2} md={2} sm={2}>
+            <OnlyWithClimatologyControl
+              value={this.state.onlyWithClimatology}
+              onChange={this.toggleOnlyWithClimatology}
+            />
           </Col>
         </Row>
 
