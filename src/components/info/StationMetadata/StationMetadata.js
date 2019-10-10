@@ -84,7 +84,7 @@ class StationMetadata extends Component {
         <Table condensed size={'sm'}>
           <thead>
           <tr>
-            { map(col => <th>{col.heading}</th>)(columns) }
+            { map(col => <th key={col.heading}>{col.heading}</th>)(columns) }
           </tr>
           </thead>
           <tbody>

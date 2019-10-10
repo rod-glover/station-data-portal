@@ -13,6 +13,13 @@ describe('qsStringify', () => {
         expect(qsStringify({ a: 'wow', b: 'shazam' })).toBe('a=wow&b=shazam');
     });
 
+    it('encodes specal characters correctly', () => {
+        expect(qsStringify({
+            reserved: ';,/?:@&=+$#',
+            unescaped: "-_.!~*'()",
+        })).toBe('reserved=%3B%2C%2F%3F%3A%40%26%3D%2B%24%23&unescaped=-_.!~*\'()');
+    });
+
     it('encodes various datatypes correctly', () => {
         expect(qsStringify({
             a: 'wow',

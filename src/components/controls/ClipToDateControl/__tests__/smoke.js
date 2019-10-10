@@ -1,12 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import StationMetadata from '../StationMetadata';
+import ClipToDateControl from '../ClipToDateControl';
 
 it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(
-      <StationMetadata allNetworks={[]}/>,
-      div
-    );
+    ReactDOM.render(<ClipToDateControl/>, div);
 });
 

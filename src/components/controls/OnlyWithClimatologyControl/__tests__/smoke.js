@@ -1,12 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import StationMetadata from '../StationMetadata';
+import OnlyWithClimatologyControl from '../OnlyWithClimatologyControl';
 
 it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(
-      <StationMetadata allNetworks={[]}/>,
-      div
-    );
+    ReactDOM.render(<OnlyWithClimatologyControl/>, div);
 });
 

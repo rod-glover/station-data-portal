@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Tabs, Tab, Table } from 'react-bootstrap';
+import { Row, Col, Button, Checkbox, Tabs, Tab, Table } from 'react-bootstrap';
 import { FeatureGroup, LayerGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import memoize from 'memoize-one';
@@ -7,6 +7,7 @@ import flow from 'lodash/fp/flow';
 import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
 import flatten from 'lodash/fp/flatten';
+import get from 'lodash/fp/get';
 import uniq from 'lodash/fp/uniq';
 import intersection from 'lodash/fp/intersection';
 import contains from 'lodash/fp/contains';
@@ -26,16 +27,20 @@ import {
   getVariables,
   getStations,
 } from '../../../data-services/station-data-service';
+import { dataDownloadTarget } from '../../../data-services/pdp-data-service';
 import VariableSelector from '../../selectors/VariableSelector';
 import JSONstringify from '../../util/JSONstringify';
 import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelector';
 import DateSelector from '../../selectors/DateSelector';
 import FileFormatSelector from '../../selectors/FileFormatSelector';
+import ClipToDateControl from '../../controls/ClipToDateControl';
 import ObservationCounts from '../../info/ObservationCounts';
 import { stationFilter } from '../../../utils/portals-common';
 import ButtonToolbar from 'react-bootstrap/es/ButtonToolbar';
 import StationMetadata from '../../info/StationMetadata';
-import { makeURI } from '../../../utils/uri';
+import OnlyWithClimatologyControl
+  from '../../controls/OnlyWithClimatologyControl';
+
 
 logger.configure({ active: true });
 
@@ -82,12 +87,17 @@ class Portal extends Component {
     selectedFrequencies: [],
     frequencyActions: {},
 
+    onlyWithClimatology: false,
+
     allStations: null,
 
     fileFormat: undefined,
+    clipToDate: false,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
+  toggleBoolean = name =>
+    this.setState(state => ({ [name]: !state[name] }));
 
   handleChangeStartDate = this.handleChange.bind(this, 'startDate');
   handleChangeEndDate = this.handleChange.bind(this, 'endDate');
@@ -114,27 +124,44 @@ class Portal extends Component {
 
   handleChangeFileFormat = this.handleChange.bind(this, 'fileFormat');
 
+  toggleClipToDate = this.toggleBoolean.bind(this, 'clipToDate');
+  toggleOnlyWithClimatology =
+    this.toggleBoolean.bind(this, 'onlyWithClimatology');
+
   componentDidMount() {
-    getNetworks().then(response => this.setState({ allNetworks: response.data }));
-    getVariables().then(response => this.setState({ allVariables: response.data }));
+    getNetworks()
+      .then(response => this.setState({ allNetworks: response.data }))
+      .then(() => this.state.networkActions.selectAll())
+    ;
+    getVariables()
+      .then(response => this.setState({ allVariables: response.data }))
+      .then(() => this.state.variableActions.selectAll())
+    ;
     getStations({
       params: {
         // limit: 1000,
         stride: 10,  // load every 10th station
       },
     })
-    .then(response => this.setState({ allStations: response.data }));
+      .then(response => this.setState({ allStations: response.data }))
+      .then(() => this.state.frequencyActions.selectAll())
+    ;
   }
 
   stationFilter = memoize(stationFilter);
 
-  downloadTarget = what =>
-    makeURI('https://data.pacificclimate.org/data/pcds/agg/', {
-      'from-date': this.state.startDate,
-      'to-date': this.state.endDate,
-      'input-polygon': '',
-      'input-var': this.state.selectedVariables[0],
-    });
+  downloadTarget = dataCategory => dataDownloadTarget({
+    startDate: this.state.startDate,
+    endDate: this.state.endDate,
+    networks: this.state.selectedNetworks,
+    variables: this.state.selectedVariables,
+    frequencies: this.state.selectedFrequencies,
+    polygon: '',
+    clipToDate: this.state.clipToDate,
+    onlyWithClimatology: this.state.onlyWithClimatology,
+    dataCategory,
+    dataFormat: this.state.fileFormat,
+  });
 
   render() {
     const filteredStations = this.stationFilter(
@@ -143,7 +170,10 @@ class Portal extends Component {
       this.state.selectedNetworks,
       this.state.selectedVariables,
       this.state.selectedFrequencies,
-      this.state.allStations
+      this.state.onlyWithClimatology,
+      this.state.allNetworks,
+      this.state.allVariables,
+      this.state.allStations,
     );
 
     const selections = [
@@ -171,8 +201,8 @@ class Portal extends Component {
       <React.Fragment>
         <Row>
           <Col lg={2} md={2} sm={2}>
-            <Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>
-            <Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>
+            {/*<Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>*/}
+            {/*<Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>*/}
             <div>
               <DateSelector
                 value={this.state.startDate}
@@ -189,7 +219,7 @@ class Portal extends Component {
             </div>
           </Col>
 
-          <Col lg={4} md={4} sm={4}>
+          <Col lg={3} md={3} sm={3}>
             <NetworkSelector
               allNetworks={this.state.allNetworks}
               onReady={this.handleNetworkSelectorReady}
@@ -201,7 +231,7 @@ class Portal extends Component {
             />
             {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
           </Col>
-          <Col lg={4} md={4} sm={4}>
+          <Col lg={3} md={3} sm={3}>
             <VariableSelector
               allVariables={this.state.allVariables}
               onReady={this.handleVariableSelectorReady}
@@ -222,6 +252,12 @@ class Portal extends Component {
               styles={commonSelectorStyles}
             />
             {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
+          </Col>
+          <Col lg={2} md={2} sm={2}>
+            <OnlyWithClimatologyControl
+              value={this.state.onlyWithClimatology}
+              onChange={this.toggleOnlyWithClimatology}
+            />
           </Col>
         </Row>
 
@@ -245,7 +281,7 @@ class Portal extends Component {
 
           <Col lg={4} md={6} sm={12} className="Data">
             <Row>
-              <Tabs defaultActiveKey={2}>
+              <Tabs defaultActiveKey={1}>
                 <Tab eventKey={1} title={'Download Data'}>
                   <h1>Station Data</h1>
 
@@ -254,12 +290,17 @@ class Portal extends Component {
                     onChange={this.handleChangeFileFormat}
                   />
 
+                  <ClipToDateControl
+                    value={this.state.clipToDate}
+                    onChange={this.toggleClipToDate}
+                  />
+
                   <ButtonToolbar>
+                    <Button href={this.downloadTarget('timeseries')}>
+                      Download Timeseries
+                    </Button>
                     <Button href={this.downloadTarget('climatology')}>
                       Download Climatology
-                    </Button>
-                    <Button disabled>
-                      Download Timeseries
                     </Button>
                   </ButtonToolbar>
 
