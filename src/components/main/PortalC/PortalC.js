@@ -129,15 +129,23 @@ class Portal extends Component {
     this.toggleBoolean.bind(this, 'onlyWithClimatology');
 
   componentDidMount() {
-    getNetworks().then(response => this.setState({ allNetworks: response.data }));
-    getVariables().then(response => this.setState({ allVariables: response.data }));
+    getNetworks()
+      .then(response => this.setState({ allNetworks: response.data }))
+      .then(() => this.state.networkActions.selectAll())
+    ;
+    getVariables()
+      .then(response => this.setState({ allVariables: response.data }))
+      .then(() => this.state.variableActions.selectAll())
+    ;
     getStations({
       params: {
         // limit: 1000,
         stride: 10,  // load every 10th station
       },
     })
-    .then(response => this.setState({ allStations: response.data }));
+      .then(response => this.setState({ allStations: response.data }))
+      .then(() => this.state.frequencyActions.selectAll())
+    ;
   }
 
   stationFilter = memoize(stationFilter);
@@ -193,8 +201,8 @@ class Portal extends Component {
       <React.Fragment>
         <Row>
           <Col lg={2} md={2} sm={2}>
-            <Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>
-            <Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>
+            {/*<Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>*/}
+            {/*<Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>*/}
             <div>
               <DateSelector
                 value={this.state.startDate}
