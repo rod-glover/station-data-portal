@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Tabs, Tab, Table } from 'react-bootstrap';
+import { Row, Col, Button, Checkbox, Tabs, Tab, Table } from 'react-bootstrap';
 import { FeatureGroup, LayerGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import memoize from 'memoize-one';
@@ -33,6 +33,7 @@ import JSONstringify from '../../util/JSONstringify';
 import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelector';
 import DateSelector from '../../selectors/DateSelector';
 import FileFormatSelector from '../../selectors/FileFormatSelector';
+import ClipToDateControl from '../../controls/ClipToDateControl';
 import ObservationCounts from '../../info/ObservationCounts';
 import { stationFilter } from '../../../utils/portals-common';
 import ButtonToolbar from 'react-bootstrap/es/ButtonToolbar';
@@ -87,6 +88,7 @@ class Portal extends Component {
     allStations: null,
 
     fileFormat: undefined,
+    clipToDate: false,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
@@ -116,6 +118,9 @@ class Portal extends Component {
 
   handleChangeFileFormat = this.handleChange.bind(this, 'fileFormat');
 
+  toggleClipToDate = () => 
+    this.setState(({ clipToDate }) => ({ clipToDate: !clipToDate }));
+
   componentDidMount() {
     getNetworks().then(response => this.setState({ allNetworks: response.data }));
     getVariables().then(response => this.setState({ allVariables: response.data }));
@@ -137,6 +142,7 @@ class Portal extends Component {
     variables: this.state.selectedVariables,
     frequencies: this.state.selectedFrequencies,
     polygon: '',
+    clipToDate: this.state.clipToDate,
     onlyWithClimatology: false,
     dataCategory,
     dataFormat: this.state.fileFormat,
@@ -258,6 +264,11 @@ class Portal extends Component {
                   <FileFormatSelector
                     value={this.state.fileFormat}
                     onChange={this.handleChangeFileFormat}
+                  />
+
+                  <ClipToDateControl
+                    value={this.state.clipToDate}
+                    onChange={this.toggleClipToDate}
                   />
 
                   <ButtonToolbar>
