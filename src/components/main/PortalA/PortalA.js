@@ -34,6 +34,7 @@ import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelect
 import ObservationCounts from '../../info/ObservationCounts';
 import DateSelector from '../../selectors/DateSelector';
 import { stationFilter } from '../../../utils/portals-common';
+import StationMap from '../../maps/StationMap';
 
 logger.configure({ active: true });
 
@@ -122,6 +123,9 @@ class PortalA extends Component {
       this.state.selectedNetworks,
       this.state.selectedVariables,
       this.state.selectedFrequencies,
+      false, // onlyWithClimatology
+      this.state.allNetworks,
+      this.state.allVariables,
       this.state.allStations
     );
 
@@ -149,20 +153,11 @@ class PortalA extends Component {
     return (
       <Row className="PortalA">
         <Col lg={9} md={8} sm={12} className="Map">
-          <BCBaseMap viewport={BCBaseMap.initialViewport}>
-            <FeatureGroup>
-              <EditControl
-                position={'topleft'}
-              />
-            </FeatureGroup>
-            <LayerGroup>
-              <StationMarkers
-                stations={filteredStations}
-                allNetworks={this.state.allNetworks}
-                allVariables={this.state.allVariables}
-              />
-            </LayerGroup>
-          </BCBaseMap>
+          <StationMap
+            stations={filteredStations}
+            allNetworks={this.state.allNetworks}
+            allVariables={this.state.allVariables}
+          />
         </Col>
 
         <Col lg={3} md={4} sm={12} className="Data">
