@@ -88,6 +88,8 @@ class Portal extends Component {
     this.state.frequencyActions.selectNone();
   };
 
+  handleSetArea = this.handleChange.bind(this, 'area');
+
   componentDidMount() {
     getNetworks().then(response => this.setState({ allNetworks: response.data }));
     getVariables().then(response => this.setState({ allVariables: response.data }));
@@ -110,6 +112,7 @@ class Portal extends Component {
       this.state.selectedVariables,
       this.state.selectedFrequencies,
       false, // onlyWithClimatology
+      this.state.area,
       this.state.allNetworks,
       this.state.allVariables,
       this.state.allStations,
@@ -206,6 +209,7 @@ class Portal extends Component {
               stations={filteredStations}
               allNetworks={this.state.allNetworks}
               allVariables={this.state.allVariables}
+              onSetArea={this.handleSetArea}
             />
           </Col>
           <Col lg={3} md={4} sm={12} className="Data">

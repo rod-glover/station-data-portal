@@ -6,22 +6,12 @@ import memoize from 'memoize-one';
 import flow from 'lodash/fp/flow';
 import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
-import flatten from 'lodash/fp/flatten';
-import get from 'lodash/fp/get';
-import uniq from 'lodash/fp/uniq';
-import intersection from 'lodash/fp/intersection';
-import contains from 'lodash/fp/contains';
-import pick from 'lodash/fp/pick';
 import join from 'lodash/fp/join';
-import tap from 'lodash/fp/tap';
-
-import { BCBaseMap } from 'pcic-react-leaflet-components';
 
 import './PortalD.css';
 
 import logger from '../../../logger';
 import NetworkSelector from '../../selectors/NetworkSelector';
-import StationMarkers from '../../maps/StationMarkers';
 import {
   getNetworks,
   getVariables,
@@ -94,6 +84,8 @@ class Portal extends Component {
 
     fileFormat: undefined,
     clipToDate: false,
+
+    area: undefined,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
@@ -128,6 +120,8 @@ class Portal extends Component {
   toggleClipToDate = this.toggleBoolean.bind(this, 'clipToDate');
   toggleOnlyWithClimatology =
     this.toggleBoolean.bind(this, 'onlyWithClimatology');
+
+  handleSetArea = this.handleChange.bind(this, 'area');
 
   componentDidMount() {
     getNetworks()
@@ -172,6 +166,7 @@ class Portal extends Component {
       this.state.selectedVariables,
       this.state.selectedFrequencies,
       this.state.onlyWithClimatology,
+      this.state.area,
       this.state.allNetworks,
       this.state.allVariables,
       this.state.allStations,
@@ -201,11 +196,17 @@ class Portal extends Component {
     return (
       <React.Fragment>
         <Row>
+          <Col>
+            <JSONstringify object={this.state.area}/>
+          </Col>
+        </Row>
+        <Row>
           <Col lg={8} md={6} sm={12} className="Map">
             <StationMap
               stations={filteredStations}
               allNetworks={this.state.allNetworks}
               allVariables={this.state.allVariables}
+              onSetArea={this.handleSetArea}
             />
           </Col>
 

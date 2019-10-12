@@ -94,6 +94,8 @@ class Portal extends Component {
 
     fileFormat: undefined,
     clipToDate: false,
+
+    area: undefined,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
@@ -128,6 +130,8 @@ class Portal extends Component {
   toggleClipToDate = this.toggleBoolean.bind(this, 'clipToDate');
   toggleOnlyWithClimatology =
     this.toggleBoolean.bind(this, 'onlyWithClimatology');
+
+  handleSetArea = this.handleChange.bind(this, 'area');
 
   componentDidMount() {
     getNetworks()
@@ -172,6 +176,7 @@ class Portal extends Component {
       this.state.selectedVariables,
       this.state.selectedFrequencies,
       this.state.onlyWithClimatology,
+      this.state.area,
       this.state.allNetworks,
       this.state.allVariables,
       this.state.allStations,
@@ -268,6 +273,7 @@ class Portal extends Component {
               stations={filteredStations}
               allNetworks={this.state.allNetworks}
               allVariables={this.state.allVariables}
+              onSetArea={this.handleSetArea}
             />
           </Col>
 
