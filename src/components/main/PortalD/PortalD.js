@@ -196,11 +196,6 @@ class Portal extends Component {
     return (
       <React.Fragment>
         <Row>
-          <Col>
-            <JSONstringify object={this.state.area}/>
-          </Col>
-        </Row>
-        <Row>
           <Col lg={8} md={6} sm={12} className="Map">
             <StationMap
               stations={filteredStations}
