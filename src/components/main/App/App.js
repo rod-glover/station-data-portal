@@ -12,6 +12,7 @@ import PortalA from '../PortalA';
 import PortalB from '../PortalB';
 import PortalC from '../PortalC';
 import PortalD from '../PortalD';
+import PortalE from '../PortalE';
 
 import './App.css';
 
@@ -20,6 +21,7 @@ const navSpec = [
   { label: 'Version B', path: 'B', component: PortalB },
   { label: 'Version C', path: 'C', component: PortalC },
   { label: 'Version D', path: 'D', component: PortalD },
+  { label: 'Version E', path: 'E', component: PortalE },
 ];
 
 
@@ -50,7 +52,7 @@ export default class App extends Component {
                         <Route path={`/${path}`} component={component}/>
                       ))
                     }
-                    <Redirect to={'/D'}/>
+                    <Redirect to={'/E'}/>
                   </Switch>
               </Grid>
             </div>
