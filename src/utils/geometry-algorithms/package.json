@@ -2,5 +2,5 @@
   "name": "geospatial",
   "version": "0.0.0",
   "private": true,
-  "main": "./geospatial.js"
+  "main": "geometry-algorithms.js"
 }

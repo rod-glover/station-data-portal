@@ -6,22 +6,12 @@ import memoize from 'memoize-one';
 import flow from 'lodash/fp/flow';
 import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
-import flatten from 'lodash/fp/flatten';
-import get from 'lodash/fp/get';
-import uniq from 'lodash/fp/uniq';
-import intersection from 'lodash/fp/intersection';
-import contains from 'lodash/fp/contains';
-import pick from 'lodash/fp/pick';
 import join from 'lodash/fp/join';
-import tap from 'lodash/fp/tap';
-
-import { BCBaseMap } from 'pcic-react-leaflet-components';
 
 import './PortalD.css';
 
 import logger from '../../../logger';
 import NetworkSelector from '../../selectors/NetworkSelector';
-import StationMarkers from '../../maps/StationMarkers';
 import {
   getNetworks,
   getVariables,
@@ -40,6 +30,7 @@ import ButtonToolbar from 'react-bootstrap/es/ButtonToolbar';
 import StationMetadata from '../../info/StationMetadata';
 import OnlyWithClimatologyControl
   from '../../controls/OnlyWithClimatologyControl';
+import StationMap from '../../maps/StationMap';
 
 
 logger.configure({ active: true });
@@ -93,6 +84,8 @@ class Portal extends Component {
 
     fileFormat: undefined,
     clipToDate: false,
+
+    area: undefined,
   };
 
   handleChange = (name, value) => this.setState({ [name]: value });
@@ -128,6 +121,8 @@ class Portal extends Component {
   toggleOnlyWithClimatology =
     this.toggleBoolean.bind(this, 'onlyWithClimatology');
 
+  handleSetArea = this.handleChange.bind(this, 'area');
+
   componentDidMount() {
     getNetworks()
       .then(response => this.setState({ allNetworks: response.data }))
@@ -156,7 +151,7 @@ class Portal extends Component {
     networks: this.state.selectedNetworks,
     variables: this.state.selectedVariables,
     frequencies: this.state.selectedFrequencies,
-    polygon: '',
+    polygon: this.state.area,
     clipToDate: this.state.clipToDate,
     onlyWithClimatology: this.state.onlyWithClimatology,
     dataCategory,
@@ -171,6 +166,7 @@ class Portal extends Component {
       this.state.selectedVariables,
       this.state.selectedFrequencies,
       this.state.onlyWithClimatology,
+      this.state.area,
       this.state.allNetworks,
       this.state.allVariables,
       this.state.allStations,
@@ -201,20 +197,12 @@ class Portal extends Component {
       <React.Fragment>
         <Row>
           <Col lg={8} md={6} sm={12} className="Map">
-            <BCBaseMap viewport={BCBaseMap.initialViewport}>
-              <FeatureGroup>
-                <EditControl
-                  position={'topleft'}
-                />
-              </FeatureGroup>
-              <LayerGroup>
-                <StationMarkers
-                  stations={filteredStations}
-                  allNetworks={this.state.allNetworks}
-                  allVariables={this.state.allVariables}
-                />
-              </LayerGroup>
-            </BCBaseMap>
+            <StationMap
+              stations={filteredStations}
+              allNetworks={this.state.allNetworks}
+              allVariables={this.state.allVariables}
+              onSetArea={this.handleSetArea}
+            />
           </Col>
 
           <Col lg={4} md={6} sm={12} className="Data">

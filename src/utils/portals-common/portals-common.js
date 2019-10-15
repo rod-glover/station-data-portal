@@ -1,4 +1,5 @@
 import contains from 'lodash/fp/contains';
+import every from 'lodash/fp/every';
 import filter from 'lodash/fp/filter';
 import flatten from 'lodash/fp/flatten';
 import flow from 'lodash/fp/flow';
@@ -6,11 +7,23 @@ import intersection from 'lodash/fp/intersection';
 import map from 'lodash/fp/map';
 import some from 'lodash/fp/some';
 import uniq from 'lodash/fp/uniq';
+import { isPointInPolygonWn } from '../geometry-algorithms';
+
+
+const checkGeoJSONPolygon = geometry => {
+  if (geometry['type'] !== 'Polygon') {
+    throw new Error(`Invalid geometry type: ${geometry['type']}`)
+  }
+};
+
+const getX = point => point[0];
+const getY = point => point[1];
+export const isPointInGeoJSONPolygon = isPointInPolygonWn(getX, getY);
 
 
 export const stationFilter = (
   startDate, endDate, selectedNetworks, selectedVariables, selectedFrequencies,
-  onlyWithClimatology, allNetworks, allVariables, allStations
+  onlyWithClimatology, area, allNetworks, allVariables, allStations
 ) => {
   // console.log('filteredStations allStations', allStations)
   // console.log('filteredStations allVariables', this.state.allVariables)
@@ -74,7 +87,7 @@ export const stationFilter = (
       )
     }),
 
-    // Station matches `onlyWithClimatology`:
+    // Stations match `onlyWithClimatology`:
     // If `onlyWithClimatology`, station reports a climatology variable.
     filter(station => {
       if (!onlyWithClimatology) {
@@ -87,6 +100,21 @@ export const stationFilter = (
         // PDP PCDS backend
         some(({ cell_method }) => /(within|over)/.test(cell_method))
       )(allVariables)
+    }),
+
+    // Stations are inside `area`
+    filter(station => {
+      if (!area) {
+        return true;
+      }
+      // TODO: Handle more generalized geometry?
+      //  See https://github.com/pacificclimate/station-data-portal/issues/21
+      checkGeoJSONPolygon(area.geometry);
+      // Dumbest possible version: Only test the first vertex list in the
+      // polygon.
+      return isPointInGeoJSONPolygon(
+        area.geometry.coordinates[0],
+        [station.histories[0].lon, station.histories[0].lat])
     }),
   )(allStations);
 };

@@ -96,7 +96,7 @@ export default class StationMetadata extends Component {
       <ReactTable
         data={stations}
         columns={columns}
-        defaultPageSize={10}
+        defaultPageSize={100}
         {...restProps}
       />
     );

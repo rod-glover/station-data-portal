@@ -1,4 +1,4 @@
-// Geospatial tools
+// Geometry algorithms
 //
 // Adapted from http://geomalgorithms.com/
 // Copyright 2000 softSurfer, 2012 Dan Sunday
