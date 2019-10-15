@@ -1,7 +1,7 @@
 import each from 'jest-each';
 import {
   isLeft, isPointInPolygonWn
-} from '../geospatial';
+} from '../geometry-algorithms';
 
 
 // Helpers

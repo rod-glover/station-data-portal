@@ -7,7 +7,7 @@ import intersection from 'lodash/fp/intersection';
 import map from 'lodash/fp/map';
 import some from 'lodash/fp/some';
 import uniq from 'lodash/fp/uniq';
-import { isPointInPolygonWn } from '../geospatial';
+import { isPointInPolygonWn } from '../geometry-algorithms';
 
 
 const checkGeoJSONPolygon = geometry => {

@@ -151,7 +151,7 @@ class Portal extends Component {
     networks: this.state.selectedNetworks,
     variables: this.state.selectedVariables,
     frequencies: this.state.selectedFrequencies,
-    polygon: '',
+    polygon: this.state.area,
     clipToDate: this.state.clipToDate,
     onlyWithClimatology: this.state.onlyWithClimatology,
     dataCategory,
