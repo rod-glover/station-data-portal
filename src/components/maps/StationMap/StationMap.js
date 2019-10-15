@@ -86,7 +86,11 @@ export default class StationMap extends Component {
 
   addGeometryLayer = layer => {
     this.setState(prevState => {
+      // Set layer visual style.
       layer.setStyle(this.layerStyle(prevState.geometryLayers.length));
+      // Make layer non-interactive so it doesn't block clicks on station
+      // markers.
+      layer.setStyle({ interactive: false });
       return { geometryLayers: prevState.geometryLayers.concat([layer]) };
     }, this.onSetArea);
   };
