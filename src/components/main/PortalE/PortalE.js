@@ -8,7 +8,7 @@ import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
 import join from 'lodash/fp/join';
 
-import './PortalD.css';
+import './PortalE.css';
 
 import logger from '../../../logger';
 import NetworkSelector from '../../selectors/NetworkSelector';
@@ -63,7 +63,7 @@ const commonSelectorStyles = {
 };
 
 
-const defaultLgs = [8, 4];
+const defaultLgs = [2, 6, 4];
 
 
 class Portal extends Component {
@@ -203,6 +203,75 @@ class Portal extends Component {
           <AdjustableColumns
             defaultLgs={defaultLgs}
             contents={[
+              <React.Fragment>
+                <Row>
+                  <Col lg={6} md={6} sm={6}>
+                    {/*<Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>*/}
+                    {/*<Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>*/}
+                    <div>
+                      <DateSelector
+                        value={this.state.startDate}
+                        onChange={this.handleChangeStartDate}
+                        label={'Start Date'}
+                      />
+                    </div>
+                    <div>
+                      <DateSelector
+                        value={this.state.endDate}
+                        onChange={this.handleChangeEndDate}
+                        label={'End Date'}
+                      />
+                    </div>
+                  </Col>
+                  <Col lg={6} md={6} sm={6}>
+                    <OnlyWithClimatologyControl
+                      value={this.state.onlyWithClimatology}
+                      onChange={this.toggleOnlyWithClimatology}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col lg={12} md={12} sm={12}>
+                    <NetworkSelector
+                      allNetworks={this.state.allNetworks}
+                      onReady={this.handleNetworkSelectorReady}
+                      value={this.state.selectedNetworks}
+                      onChange={this.handleChangeNetwork}
+                      isSearchable
+                      isClearable={false}
+                      styles={commonSelectorStyles}
+                    />
+                    {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col lg={12} md={12} sm={12}>
+                    <VariableSelector
+                      allVariables={this.state.allVariables}
+                      onReady={this.handleVariableSelectorReady}
+                      value={this.state.selectedVariables}
+                      onChange={this.handleChangeVariable}
+                      isSearchable
+                      isClearable={false}
+                      styles={commonSelectorStyles}
+                    />
+                    {/*<JSONstringify object={this.state.selectedVariables}/>*/}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col lg={12} md={12} sm={12}>
+                    <FrequencySelector
+                      onReady={this.handleFrequencySelectorReady}
+                      value={this.state.selectedFrequencies}
+                      onChange={this.handleChangeFrequency}
+                      isClearable={false}
+                      styles={commonSelectorStyles}
+                    />
+                    {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
+                  </Col>
+                </Row>
+              </React.Fragment>
+              ,
               <StationMap
                 stations={filteredStations}
                 allNetworks={this.state.allNetworks}
@@ -212,75 +281,6 @@ class Portal extends Component {
 
               <Row>
                 <Tabs defaultActiveKey={'Stations and Metadata'}>
-                  <Tab eventKey={'Filters'} title={'Filters'}>
-                    <Row>
-                      <Col lg={6} md={6} sm={6}>
-                        {/*<Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>*/}
-                        {/*<Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>*/}
-                        <div>
-                          <DateSelector
-                            value={this.state.startDate}
-                            onChange={this.handleChangeStartDate}
-                            label={'Start Date'}
-                          />
-                        </div>
-                        <div>
-                          <DateSelector
-                            value={this.state.endDate}
-                            onChange={this.handleChangeEndDate}
-                            label={'End Date'}
-                          />
-                        </div>
-                      </Col>
-                      <Col lg={6} md={6} sm={6}>
-                        <OnlyWithClimatologyControl
-                          value={this.state.onlyWithClimatology}
-                          onChange={this.toggleOnlyWithClimatology}
-                        />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg={12} md={12} sm={12}>
-                        <NetworkSelector
-                          allNetworks={this.state.allNetworks}
-                          onReady={this.handleNetworkSelectorReady}
-                          value={this.state.selectedNetworks}
-                          onChange={this.handleChangeNetwork}
-                          isSearchable
-                          isClearable={false}
-                          styles={commonSelectorStyles}
-                        />
-                        {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg={12} md={12} sm={12}>
-                        <VariableSelector
-                          allVariables={this.state.allVariables}
-                          onReady={this.handleVariableSelectorReady}
-                          value={this.state.selectedVariables}
-                          onChange={this.handleChangeVariable}
-                          isSearchable
-                          isClearable={false}
-                          styles={commonSelectorStyles}
-                        />
-                        {/*<JSONstringify object={this.state.selectedVariables}/>*/}
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg={12} md={12} sm={12}>
-                        <FrequencySelector
-                          onReady={this.handleFrequencySelectorReady}
-                          value={this.state.selectedFrequencies}
-                          onChange={this.handleChangeFrequency}
-                          isClearable={false}
-                          styles={commonSelectorStyles}
-                        />
-                        {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
-                      </Col>
-                    </Row>
-                  </Tab>
-
                   <Tab eventKey={'Stations and Metadata'} title={'Stations and Metadata'}>
                     <Button disabled>
                       Download Metadata
