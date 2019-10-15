@@ -62,29 +62,29 @@ export default class AdjustableColumns extends Component {
       <Col lg={lg}>
         <Row>
           <Col lg={12} className={'text-center'}>
-              {i > 0 ?
-                <Button
-                  bsSize="xsmall"
-                  onClick={this.handleExpandLeft(i)}
-                  disabled={this.state.lgs[i-1] <= 1}
-                  title={'Click to expand this column to the left'}
-                >
-                  {'<'}
-                </Button> :
-                null
-              }
+            {
+              i > 0 &&
+              <Button
+                bsSize="xsmall"
+                onClick={this.handleExpandLeft(i)}
+                disabled={this.state.lgs[i-1] <= 1}
+                title={'Click to expand this column to the left'}
+              >
+                {'<'}
+              </Button>
+            }
             <Badge>{lg}</Badge>
-              {i < n-1 ?
-                <Button
-                  bsSize="xsmall"
-                  onClick={this.handleExpandRight(i)}
-                  disabled={this.state.lgs[i+1] <= 1}
-                  title={'Click to expand this column to the right'}
-                >
-                  {'>'}
-                </Button> :
-                null
-              }
+            {
+              i < n-1 &&
+              <Button
+                bsSize="xsmall"
+                onClick={this.handleExpandRight(i)}
+                disabled={this.state.lgs[i+1] <= 1}
+                title={'Click to expand this column to the right'}
+              >
+                {'>'}
+              </Button>
+            }
           </Col>
         </Row>
         <Row>
