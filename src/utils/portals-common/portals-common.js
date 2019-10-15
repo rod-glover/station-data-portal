@@ -107,6 +107,8 @@ export const stationFilter = (
       if (!area) {
         return true;
       }
+      // TODO: Handle more generalized geometry?
+      //  See https://github.com/pacificclimate/station-data-portal/issues/21
       checkGeoJSONPolygon(area.geometry);
       // Dumbest possible version: Only test the first vertex list in the
       // polygon.

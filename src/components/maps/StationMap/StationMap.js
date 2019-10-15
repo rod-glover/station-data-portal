@@ -64,7 +64,9 @@ export default class StationMap extends Component {
   layersToArea = (layers) => {
     // const area = layersToGeoJSON('GeometryCollection', layers);
     // const area = layersToGeoJSON('FeatureCollection', layers);
-    // TODO: Fix this ...
+    // TODO: Verify assertion below (copied from CE, which has a different be).
+    // TODO: Handle more general geometry?
+    //  See https://github.com/pacificclimate/station-data-portal/pull/18/files#diff-7171e91138869d2b0e1de40b6ea7e584R64-R75
     // The thing that receives this GeoJSON doesn't like `FeatureCollection`s
     // or `GeometryCollection`s.
     // Right now we are therefore only updating with the first Feature, i.e.,
