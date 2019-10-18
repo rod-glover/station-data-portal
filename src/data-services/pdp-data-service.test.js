@@ -28,12 +28,17 @@ describe('date2pdpFormat', () => {
 const networkOption = name => ({ value: { name }, foo: 'bar' });
 
 describe('networkSelectorOptions2pdpFormat', () => {
+  const allNetworks = map(networkOption)(['alpha', 'beta', 'gamma']);
+
   it.each([
     [ [], '' ],
     [ ['alpha'], 'alpha' ],
     [ ['alpha', 'beta'], 'alpha,beta' ],
+    [ ['alpha', 'gamma', 'beta'], '' ],
   ])('works for %j', (names, expected) => {
-    expect(networkSelectorOptions2pdpFormat(map(networkOption)(names))).toBe(expected);
+    expect(
+      networkSelectorOptions2pdpFormat(map(networkOption)(names), allNetworks)
+    ).toBe(expected);
   });
 });
 
@@ -67,6 +72,12 @@ const variableOption = names => ({
 });
 
 describe('variableSelectorOptions2pdpFormat', () => {
+  const allOptions = {
+    options: [
+      map(variableOption)([['alpha'], ['beta'], ['gamma'], ['delta']]),
+    ],
+  };
+
   it.each([
     [ 'empty array', [], '' ],
     [ 'one option, one context',
@@ -85,8 +96,11 @@ describe('variableSelectorOptions2pdpFormat', () => {
       [variableOption(['alpha', 'beta']), variableOption(['gamma']),
         variableOption(['alpha']), variableOption(['beta'])],
       'alpha_snalpha_cm,beta_snbeta_cm,gamma_sngamma_cm' ],
+    [ 'all options', allOptions.options, '' ],
   ])('works for %s', (description, options, expected) => {
-    expect(variableSelectorOptions2pdpFormat(options)).toBe(expected);
+    expect(
+      variableSelectorOptions2pdpFormat(options, allOptions)
+    ).toBe(expected);
   });
 });
 
@@ -94,12 +108,17 @@ describe('variableSelectorOptions2pdpFormat', () => {
 const frequencyOption = value => ({ value });
 
 describe('frequencyOptions2pdpFormat', () => {
+  const allOptions = map(frequencyOption)(['alpha', 'beta', 'gamma']);
+
   it.each([
     [ [], '' ],
     [ ['alpha'], 'alpha' ],
     [ ['alpha', 'beta'], 'alpha,beta' ],
+    [ ['alpha', 'gamma', 'beta'], '' ],
   ])('works for %j', (values, expected) => {
-    expect(frequencyOptions2pdpFormat(map(frequencyOption)(values))).toBe(expected);
+    expect(
+      frequencyOptions2pdpFormat(map(frequencyOption)(values), allOptions)
+    ).toBe(expected);
   });
 });
 
@@ -118,6 +137,11 @@ describe('dataDownloadTarget', () => {
 
   const regex = s => new RegExp(escapeRegExp(s));
 
+  const geoJSONNullPolygon = {
+    "type": "Polygon",
+    "coordinates": [ ]
+  };
+
   it('works for clipToDate and onlyWithClimatology true', () => {
     const target = dataDownloadTarget({
       startDate: new Date(2000, 0, 1),
@@ -125,7 +149,7 @@ describe('dataDownloadTarget', () => {
       networks: map(networkOption)(['nw1', 'nw2']),
       variables: map(variableOption)([['var1'], ['var2']]),
       frequencies: map(frequencyOption)(['freq1', 'freq2']),
-      polygon: 'POLYGON',
+      polygon: geoJSONNullPolygon,
       clipToDate: true,
       onlyWithClimatology: true,
       dataCategory: 'category',
@@ -151,7 +175,7 @@ describe('dataDownloadTarget', () => {
       networks: map(networkOption)(['nw1', 'nw2']),
       variables: map(variableOption)([['var1'], ['var2']]),
       frequencies: map(frequencyOption)(['freq1', 'freq2']),
-      polygon: 'POLYGON',
+      polygon: geoJSONNullPolygon,
       clipToDate: false,
       onlyWithClimatology: false,
       dataCategory: 'category',

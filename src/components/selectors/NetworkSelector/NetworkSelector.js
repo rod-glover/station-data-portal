@@ -26,6 +26,7 @@ class NetworkSelector extends Component {
 
   componentDidMount() {
     const actions = {
+      getAllOptions: this.getOptions,
       selectAll: this.handleClickAll,
       selectNone: this.handleClickNone,
     };
@@ -68,10 +69,11 @@ class NetworkSelector extends Component {
     },
   };
 
+  getOptions = () => this.makeOptions(this.props.allNetworks);
+
   handleClickAll = () =>
     this.props.onChange(
-      filter(option => !option.isDisabled)
-        (this.makeOptions(this.props.allNetworks))
+      filter(option => !option.isDisabled)(this.getOptions())
     );
 
   handleClickNone = () => this.props.onChange([]);
@@ -95,7 +97,7 @@ class NetworkSelector extends Component {
         <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
         <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
         <Select
-          options={this.makeOptions(this.props.allNetworks)}
+          options={this.getOptions()}
           placeholder={
             this.props.allNetworks ? 'Select or type to search...' : 'Loading...'
           }

@@ -39,6 +39,7 @@ class VariableSelector extends Component {
 
   componentDidMount() {
     const actions = {
+      getAllOptions: this.getOptions,
       selectAll: this.handleClickAll,
       selectNone: this.handleClickNone,
     };
@@ -151,6 +152,8 @@ class VariableSelector extends Component {
       )(allVariables)
   ));
 
+  getOptions = () => this.makeOptions(this.props.allVariables);
+
   handleClickAll = () =>
     this.props.onChange(
       flow(
@@ -166,7 +169,7 @@ class VariableSelector extends Component {
   handleClickNone = () => this.props.onChange([]);
 
   render() {
-    const options = this.makeOptions(this.props.allVariables);
+    const options = this.getOptions();
     return (
       <div>
         <div><ControlLabel>Variable</ControlLabel></div>

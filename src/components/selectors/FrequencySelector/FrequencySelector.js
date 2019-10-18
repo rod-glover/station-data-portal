@@ -47,6 +47,7 @@ class FrequencySelector extends Component {
 
   componentDidMount() {
     const actions = {
+      getAllOptions: () => options,
       selectAll: this.handleClickAll,
       selectNone: this.handleClickNone,
     };
