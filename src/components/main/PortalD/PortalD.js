@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap';
 import memoize from 'memoize-one';
 import flow from 'lodash/fp/flow';
-import getOr from 'lodash/fp/getOr';
 import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
 import join from 'lodash/fp/join';
@@ -157,17 +156,6 @@ class Portal extends Component {
 
   stationFilter = memoize(stationFilter);
 
-  getAllVariableOptions = () => {
-    // We must delay getting `this.state.variableActions.getAllOptions` until
-    // this wrapper function is actually invoked. Without the function wrapper,
-    // it is evaluated at instance creation time, when getAllOptions is still
-    // undefined, and therefore always returns the empty array.
-    // Given this timing constraint, we could assume that getAllOptions is
-    // indeed always defined, and remove the default value (`() => []`), but
-    // it's easy insurance to leave in.
-    return getOr(() => [], 'variableActions.getAllOptions', this.state)();
-  };
-
   downloadData = dataCategory => () => {
     const href = dataDownloadTarget({
       startDate: this.state.startDate,
@@ -181,8 +169,8 @@ class Portal extends Component {
       dataCategory,
       dataFormat: this.state.fileFormat,
       allNetworks: this.state.allNetworks,
-      allVariables: this.getAllVariableOptions(),
-      allFrequencies: FrequencySelector.options,
+      allVariables: this.state.variableActions.getAllOptions(),
+      allFrequencies: this.state.frequencyActions.getAllOptions(),
     });
     console.log(`### Download ${dataCategory}: ${href.slice(10)}`)
     // window.location.href = href;
