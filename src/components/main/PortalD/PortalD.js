@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Checkbox, Tabs, Tab, Table } from 'react-bootstrap';
-import { FeatureGroup, LayerGroup } from 'react-leaflet';
-import { EditControl } from 'react-leaflet-draw';
+import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap';
 import memoize from 'memoize-one';
 import flow from 'lodash/fp/flow';
+import getOr from 'lodash/fp/getOr';
 import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
 import join from 'lodash/fp/join';
@@ -14,12 +13,13 @@ import logger from '../../../logger';
 import NetworkSelector from '../../selectors/NetworkSelector';
 import {
   getNetworks,
-  getVariables,
   getStations,
+  getVariables,
 } from '../../../data-services/station-data-service';
 import { dataDownloadTarget } from '../../../data-services/pdp-data-service';
 import VariableSelector from '../../selectors/VariableSelector';
-import FrequencySelector from '../../selectors/FrequencySelector/FrequencySelector';
+import FrequencySelector
+  from '../../selectors/FrequencySelector/FrequencySelector';
 import DateSelector from '../../selectors/DateSelector';
 import FileFormatSelector from '../../selectors/FileFormatSelector';
 import ClipToDateControl from '../../controls/ClipToDateControl';
@@ -30,7 +30,6 @@ import StationMetadata from '../../info/StationMetadata';
 import OnlyWithClimatologyControl
   from '../../controls/OnlyWithClimatologyControl';
 import StationMap from '../../maps/StationMap';
-import JSONstringify from '../../util/JSONstringify';
 import AdjustableColumns from '../../util/AdjustableColumns';
 
 
@@ -71,6 +70,9 @@ class Portal extends Component {
     startDate: null,
     endDate: null,
 
+    // TODO: Rename things here to make obvious the distinction between
+    //  things (e.g., networks) proper, from the backend API, and selector
+    //  options derived from them.
     allNetworks: null,
     selectedNetworks: [],
     networkActions: {},
@@ -128,6 +130,12 @@ class Portal extends Component {
   handleSetArea = this.handleChange.bind(this, 'area');
 
   componentDidMount() {
+    // FIXME: The invocations of 'selectAll()` here are fragile, subject to a
+    //  race condition.
+    //  The selectors for each item (networks, variables, frequencies) call
+    //  back to populate `state.xxxActions`, and there is no guarantee
+    //  that they have done so by the time the promise settles. In fact, it's
+    //  astonishing that this works at all. Who wrote this junk anyway???
     getNetworks()
       .then(response => this.setState({ allNetworks: response.data }))
       .then(() => this.state.networkActions.selectAll())
@@ -149,18 +157,39 @@ class Portal extends Component {
 
   stationFilter = memoize(stationFilter);
 
-  downloadTarget = dataCategory => dataDownloadTarget({
-    startDate: this.state.startDate,
-    endDate: this.state.endDate,
-    networks: this.state.selectedNetworks,
-    variables: this.state.selectedVariables,
-    frequencies: this.state.selectedFrequencies,
-    polygon: this.state.area,
-    clipToDate: this.state.clipToDate,
-    onlyWithClimatology: this.state.onlyWithClimatology,
-    dataCategory,
-    dataFormat: this.state.fileFormat,
-  });
+  getAllVariableOptions = () => {
+    // We must delay getting `this.state.variableActions.getAllOptions` until
+    // this wrapper function is actually invoked. Without the function wrapper,
+    // it is evaluated at instance creation time, when getAllOptions is still
+    // undefined, and therefore always returns the empty array.
+    // Given this timing constraint, we could assume that getAllOptions is
+    // indeed always defined, and remove the default value (`() => []`), but
+    // it's easy insurance to leave in.
+    return getOr(() => [], 'variableActions.getAllOptions', this.state)();
+  };
+
+  downloadData = dataCategory => () => {
+    const href = dataDownloadTarget({
+      startDate: this.state.startDate,
+      endDate: this.state.endDate,
+      networks: this.state.selectedNetworks,
+      variables: this.state.selectedVariables,
+      frequencies: this.state.selectedFrequencies,
+      polygon: this.state.area,
+      clipToDate: this.state.clipToDate,
+      onlyWithClimatology: this.state.onlyWithClimatology,
+      dataCategory,
+      dataFormat: this.state.fileFormat,
+      allNetworks: this.state.allNetworks,
+      allVariables: this.getAllVariableOptions(),
+      allFrequencies: FrequencySelector.options,
+    });
+    console.log(`### Download ${dataCategory}: ${href.slice(10)}`)
+    // window.location.href = href;
+  };
+
+  downloadTimeseries = this.downloadData('timeseries');
+  downloadClimatology = this.downloadData('climatology');
 
   render() {
     const filteredStations = this.stationFilter(
@@ -308,10 +337,10 @@ class Portal extends Component {
                     />
 
                     <ButtonToolbar>
-                      <Button href={this.downloadTarget('timeseries')}>
+                      <Button onClick={this.downloadTimeseries}>
                         Download Timeseries
                       </Button>
-                      <Button href={this.downloadTarget('climatology')}>
+                      <Button onClick={this.downloadClimatology}>
                         Download Climatology
                       </Button>
                     </ButtonToolbar>
