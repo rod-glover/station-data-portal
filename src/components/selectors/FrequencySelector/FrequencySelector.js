@@ -11,6 +11,29 @@ import './FrequencySelector.css';
 logger.configure({ active: true });
 
 
+const options = [
+  {
+    label: 'Hourly',
+    value: '1-hourly',
+  },
+  {
+    label: 'Daily',
+    value: 'daily',
+  },
+  {
+    label: 'Semi-daily',
+    value: '12-hourly',
+  },
+  {
+    label: 'Irregular',
+    value: 'irregular',
+  },
+  {
+    label: 'Unspecified',
+    value: '',
+  },
+];
+
 class FrequencySelector extends Component {
   static propTypes = {
     onReady: PropTypes.func.isRequired,
@@ -22,29 +45,6 @@ class FrequencySelector extends Component {
     onReady: () => null,
   };
 
-  static options = [
-    {
-      label: 'Hourly',
-      value: '1-hourly',
-    },
-    {
-      label: 'Daily',
-      value: 'daily',
-    },
-    {
-      label: 'Semi-daily',
-      value: '12-hourly',
-    },
-    {
-      label: 'Irregular',
-      value: 'irregular',
-    },
-    {
-      label: 'Unspecified',
-      value: '',
-    },
-  ];
-
   componentDidMount() {
     const actions = {
       selectAll: this.handleClickAll,
@@ -53,12 +53,12 @@ class FrequencySelector extends Component {
     this.props.onReady(actions);
   }
 
-  handleClickAll = () => this.props.onChange(FrequencySelector.options);
+  handleClickAll = () => this.props.onChange(options);
 
   handleClickNone = () => this.props.onChange([]);
 
   static valueToLabel = value => {
-    const option = find({ value })(FrequencySelector.options);
+    const option = find({ value })(options);
     return option ? option.label : value;
   };
 
@@ -69,7 +69,7 @@ class FrequencySelector extends Component {
         <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
         <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
         <Select
-          options={FrequencySelector.options}
+          options={options}
           {...this.props}
           isMulti
         />
