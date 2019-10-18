@@ -168,7 +168,7 @@ class Portal extends Component {
       onlyWithClimatology: this.state.onlyWithClimatology,
       dataCategory,
       dataFormat: this.state.fileFormat,
-      allNetworks: this.state.allNetworks,
+      allNetworks: this.state.networkActions.getAllOptions(),
       allVariables: this.state.variableActions.getAllOptions(),
       allFrequencies: this.state.frequencyActions.getAllOptions(),
     });
