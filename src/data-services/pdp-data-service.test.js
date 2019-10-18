@@ -137,12 +137,12 @@ describe('dataDownloadTarget', () => {
 
   const regex = s => new RegExp(escapeRegExp(s));
 
-  it('works for clipToDate and onlyWithClimatology true', () => {
-    const geoJSONNullPolygon = {
-      "type": "Polygon",
-      "coordinates": [ ]
-    };
+  const geoJSONNullPolygon = {
+    "type": "Polygon",
+    "coordinates": [ ]
+  };
 
+  it('works for clipToDate and onlyWithClimatology true', () => {
     const target = dataDownloadTarget({
       startDate: new Date(2000, 0, 1),
       endDate: new Date(2010, 11, 31),
@@ -175,10 +175,7 @@ describe('dataDownloadTarget', () => {
       networks: map(networkOption)(['nw1', 'nw2']),
       variables: map(variableOption)([['var1'], ['var2']]),
       frequencies: map(frequencyOption)(['freq1', 'freq2']),
-      polygon: {
-        "type": "Polygon",
-        "coordinates": [ ]
-      },
+      polygon: geoJSONNullPolygon,
       clipToDate: false,
       onlyWithClimatology: false,
       dataCategory: 'category',
