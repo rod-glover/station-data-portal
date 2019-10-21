@@ -3,28 +3,20 @@ import React, { Component } from 'react';
 import { Button, ControlLabel } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
-import {
-  map,
-  filter,
-  flatten,
-  some,
-  pick,
-  includes,
-  sortBy,
-  flow,
-  tap
-} from 'lodash/fp';
+import map from 'lodash/fp/map';
+import filter from 'lodash/fp/filter';
+import flatten from 'lodash/fp/flatten';
+import some from 'lodash/fp/some';
+import includes from 'lodash/fp/includes';
+import sortBy from 'lodash/fp/sortBy';
+import flow from 'lodash/fp/flow';
+import tap from 'lodash/fp/tap';
 import { groupByGeneral } from '../../../utils/fp';
+import { defaultValue, defaultValueSelector } from '../common';
 
 import logger from '../../../logger';
 
 import './VariableSelector.css';
-import cond from 'lodash/fp/cond';
-import isEqual from 'lodash/fp/isEqual';
-import constant from 'lodash/fp/constant';
-import isFunction from 'lodash/fp/isFunction';
-import stubTrue from 'lodash/fp/stubTrue';
-import identity from 'lodash/fp/identity';
 
 logger.configure({ active: true });
 
@@ -48,6 +40,7 @@ class VariableSelector extends Component {
 
   static defaultProps = {
     onReady: () => null,
+    defaultValueSelector: 'all',
   };
 
   componentDidMount() {
@@ -67,14 +60,9 @@ class VariableSelector extends Component {
   }
 
   setDefault = () => {
-    const { defaultValue, onChange } = this.props;
-    const value = cond([
-      [isEqual('none'), constant([])],
-      [isFunction, filter],
-      [stubTrue, constant(identity)],
-    ])(defaultValue)(this.getFlattenedOptions());
-    console.log('### VS.setDefault', value)
-    onChange(value);
+    this.props.onChange(
+      defaultValue(this.props.defaultValueSelector, this.getFlattenedOptions())
+    );
   };
 
   static variableType = contexts => {

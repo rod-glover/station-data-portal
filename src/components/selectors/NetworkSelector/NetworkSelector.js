@@ -12,16 +12,12 @@ import fromPairs from 'lodash/fp/fromPairs';
 import identity from 'lodash/fp/identity';
 import assign from 'lodash/fp/assign';
 import tap from 'lodash/fp/tap';
-import cond from 'lodash/fp/cond';
-import isEqual from 'lodash/fp/isEqual';
-import constant from 'lodash/fp/constant';
-import isFunction from 'lodash/fp/isFunction';
-import stubTrue from 'lodash/fp/stubTrue';
 
 import { composeWithRestArgs } from '../../../utils/fp'
 import chroma from 'chroma-js';
 import logger from '../../../logger';
 import './NetworkSelector.css';
+import { defaultValue } from '../common';
 
 logger.configure({ active: true });
 
@@ -32,7 +28,7 @@ class NetworkSelector extends Component {
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
-    defaultValue: PropTypes.oneOfType([
+    defaultValueSelector: PropTypes.oneOfType([
       PropTypes.oneOf(['all', 'none']),
       PropTypes.func,
     ]),
@@ -40,6 +36,7 @@ class NetworkSelector extends Component {
 
   static defaultProps = {
     onReady: () => null,
+    defaultValueSelector: 'all',
   };
 
   componentDidMount() {
@@ -59,14 +56,9 @@ class NetworkSelector extends Component {
   }
 
   setDefault = () => {
-    const { defaultValue, onChange } = this.props;
-    const value = cond([
-      [isEqual('none'), constant([])],
-      [isFunction, filter],
-      [stubTrue, constant(identity)],
-    ])(defaultValue)(this.getOptions());
-    console.log('### NS.setDefault', value)
-    onChange(value);
+    this.props.onChange(
+      defaultValue(this.props.defaultValueSelector, this.getOptions())
+    );
   };
 
   // This function must be an instance property to be memoized correctly.

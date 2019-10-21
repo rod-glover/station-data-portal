@@ -3,17 +3,10 @@ import React, { Component } from 'react';
 import { Button, ControlLabel } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
-import cond from 'lodash/fp/cond';
-import constant from 'lodash/fp/constant';
-import filter from 'lodash/fp/filter';
 import find from 'lodash/fp/find';
-import identity from 'lodash/fp/identity';
-import isEqual from 'lodash/fp/isEqual';
-import isFunction from 'lodash/fp/isFunction';
-import chroma from 'chroma-js';
+import { defaultValue } from '../common';
 import logger from '../../../logger';
 import './FrequencySelector.css';
-import stubTrue from 'lodash/fp/stubTrue';
 
 logger.configure({ active: true });
 
@@ -46,7 +39,7 @@ class FrequencySelector extends Component {
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
-    defaultValue: PropTypes.oneOfType([
+    defaultValueSelector: PropTypes.oneOfType([
       PropTypes.oneOf(['all', 'none']),
       PropTypes.func,
     ]),
@@ -54,7 +47,7 @@ class FrequencySelector extends Component {
 
   static defaultProps = {
     onReady: () => null,
-    defaultValue: 'all',
+    defaultValueSelector: 'all',
   };
 
   componentDidMount() {
@@ -68,14 +61,9 @@ class FrequencySelector extends Component {
   }
 
   setDefault = () => {
-    const { defaultValue, onChange } = this.props;
-    const value = cond([
-      [isEqual('none'), constant([])],
-      [isFunction, filter],
-      [stubTrue, constant(identity)],
-    ])(defaultValue)(options);
-    console.log('### setDefault', value)
-    onChange(value);
+    this.props.onChange(
+      defaultValue(this.props.defaultValueSelector, options)
+    );
   };
 
   handleClickAll = () => this.props.onChange(options);
