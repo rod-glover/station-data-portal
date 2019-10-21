@@ -129,22 +129,15 @@ class Portal extends Component {
 
   componentDidMount() {
     getNetworks()
-      .then(response => this.setState({ allNetworks: response.data }))
-      .then(() => this.state.networkActions.selectAll())
-    ;
+      .then(response => this.setState({ allNetworks: response.data }));
     getVariables()
-      .then(response => this.setState({ allVariables: response.data }))
-      .then(() => this.state.variableActions.selectAll())
-    ;
+      .then(response => this.setState({ allVariables: response.data }));
     getStations({
       params: {
         // limit: 1000,
         stride: 10,  // load every 10th station
       },
-    })
-      .then(response => this.setState({ allStations: response.data }))
-      .then(() => this.state.frequencyActions.selectAll())
-    ;
+    }).then(response => this.setState({ allStations: response.data }));
   }
 
   stationFilter = memoize(stationFilter);
