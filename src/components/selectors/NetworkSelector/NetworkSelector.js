@@ -3,11 +3,22 @@ import React, { Component } from 'react';
 import { Button, ControlLabel } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
-import { map, flow, filter, sortBy, toPairs, fromPairs, identity, assign, compose, tap } from 'lodash/fp';
+import map from 'lodash/fp/map';
+import flow from 'lodash/fp/flow';
+import filter from 'lodash/fp/filter';
+import sortBy from 'lodash/fp/sortBy';
+import toPairs from 'lodash/fp/toPairs';
+import fromPairs from 'lodash/fp/fromPairs';
+import identity from 'lodash/fp/identity';
+import assign from 'lodash/fp/assign';
+import tap from 'lodash/fp/tap';
+
 import { composeWithRestArgs } from '../../../utils/fp'
 import chroma from 'chroma-js';
 import logger from '../../../logger';
 import './NetworkSelector.css';
+import { defaultValue } from '../common';
+import LocalPropTypes from '../../local-prop-types';
 
 logger.configure({ active: true });
 
@@ -18,13 +29,16 @@ class NetworkSelector extends Component {
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
+    defaultValueSelector: LocalPropTypes.defaultValueSelector,
   };
 
   static defaultProps = {
     onReady: () => null,
+    defaultValueSelector: 'all',
   };
 
   componentDidMount() {
+    this.setDefault();
     const actions = {
       getAllOptions: this.getOptions,
       selectAll: this.handleClickAll,
@@ -32,6 +46,18 @@ class NetworkSelector extends Component {
     };
     this.props.onReady(actions);
   }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.allNetworks !== prevProps.allNetworks) {
+      this.setDefault();
+    }
+  }
+
+  setDefault = () => {
+    this.props.onChange(
+      defaultValue(this.props.defaultValueSelector, this.getOptions())
+    );
+  };
 
   // This function must be an instance property to be memoized correctly.
   makeOptions = memoize(allNetworks => (

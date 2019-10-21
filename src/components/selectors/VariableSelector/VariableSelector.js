@@ -3,41 +3,50 @@ import React, { Component } from 'react';
 import { Button, ControlLabel } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
-import {
-  map,
-  filter,
-  flatten,
-  some,
-  pick,
-  includes,
-  sortBy,
-  flow,
-  tap
-} from 'lodash/fp';
+import map from 'lodash/fp/map';
+import filter from 'lodash/fp/filter';
+import flatten from 'lodash/fp/flatten';
+import some from 'lodash/fp/some';
+import includes from 'lodash/fp/includes';
+import sortBy from 'lodash/fp/sortBy';
+import flow from 'lodash/fp/flow';
+import tap from 'lodash/fp/tap';
 import { groupByGeneral } from '../../../utils/fp';
+import { defaultValue, defaultValueSelector } from '../common';
 
 import logger from '../../../logger';
 
 import './VariableSelector.css';
+import LocalPropTypes from '../../local-prop-types';
 
 logger.configure({ active: true });
 
 
 // TODO: Update pcic-react-components GroupingSelector to communicate options
 // and reuse here? Right now there is a lot of repetition of function.
+
+const flattenOptions = flow(
+  map(group => group.options),
+  flatten,
+  filter(option => !option.isDisabled),
+);
+
 class VariableSelector extends Component {
   static propTypes = {
     allVariables: PropTypes.array.isRequired,
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
+    defaultValueSelector: LocalPropTypes.defaultValueSelector,
   };
 
   static defaultProps = {
     onReady: () => null,
+    defaultValueSelector: 'all',
   };
 
   componentDidMount() {
+    this.setDefault();
     const actions = {
       getAllOptions: this.getOptions,
       selectAll: this.handleClickAll,
@@ -45,6 +54,18 @@ class VariableSelector extends Component {
     };
     this.props.onReady(actions);
   }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.allVariables !== prevProps.allVariables) {
+      this.setDefault();
+    }
+  }
+
+  setDefault = () => {
+    this.props.onChange(
+      defaultValue(this.props.defaultValueSelector, this.getFlattenedOptions())
+    );
+  };
 
   static variableType = contexts => {
     const types = [
@@ -153,15 +174,9 @@ class VariableSelector extends Component {
   ));
 
   getOptions = () => this.makeOptions(this.props.allVariables);
+  getFlattenedOptions = () => flattenOptions(this.getOptions());
 
-  handleClickAll = () =>
-    this.props.onChange(
-      flow(
-        map(group => group.options),
-        flatten,
-        filter(option => !option.isDisabled),
-      )(this.makeOptions(this.props.allVariables))
-    );
+  handleClickAll = () => this.props.onChange(this.getFlattenedOptions());
 
   makeHandleClickGroup = group =>
     (() => this.props.onChange(group.options));

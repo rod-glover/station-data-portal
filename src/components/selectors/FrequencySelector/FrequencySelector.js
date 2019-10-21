@@ -3,10 +3,11 @@ import React, { Component } from 'react';
 import { Button, ControlLabel } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
-import { map, flow, filter, sortBy, find, tap } from 'lodash/fp';
-import chroma from 'chroma-js';
+import find from 'lodash/fp/find';
+import { defaultValue } from '../common';
 import logger from '../../../logger';
 import './FrequencySelector.css';
+import LocalPropTypes from '../../local-prop-types';
 
 logger.configure({ active: true });
 
@@ -39,13 +40,16 @@ class FrequencySelector extends Component {
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
+    defaultValueSelector: LocalPropTypes.defaultValueSelector,
   };
 
   static defaultProps = {
     onReady: () => null,
+    defaultValueSelector: 'all',
   };
 
   componentDidMount() {
+    this.setDefault();
     const actions = {
       getAllOptions: () => options,
       selectAll: this.handleClickAll,
@@ -53,6 +57,12 @@ class FrequencySelector extends Component {
     };
     this.props.onReady(actions);
   }
+
+  setDefault = () => {
+    this.props.onChange(
+      defaultValue(this.props.defaultValueSelector, options)
+    );
+  };
 
   handleClickAll = () => this.props.onChange(options);
 
