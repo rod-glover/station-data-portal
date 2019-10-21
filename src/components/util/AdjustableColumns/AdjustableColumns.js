@@ -31,25 +31,25 @@ export default class AdjustableColumns extends Component {
     }
   }
 
-  handleExpandLeft = index => () => this.setState(state => {
+  handleShrinkLeft = index => () => this.setState(state => {
     const lgs = state.lgs;
     return {
       lgs: concat(
         slice(0, index-1, lgs),
-        lgs[index-1] - 1,
-        lgs[index] + 1,
+        lgs[index-1] + 1,
+        lgs[index] - 1,
         slice(index+1, lgs.length, lgs),
       )
     }
   });
 
-  handleExpandRight = index => () => this.setState(state => {
+  handleShrinkRight = index => () => this.setState(state => {
     const lgs = state.lgs;
     return {
       lgs: concat(
         slice(0, index, lgs),
-        lgs[index] + 1,
-        lgs[index+1] - 1,
+        lgs[index] - 1,
+        lgs[index+1] + 1,
         slice(index+2, lgs.length, lgs),
       )
     }
@@ -59,30 +59,46 @@ export default class AdjustableColumns extends Component {
     const n = this.props.contents.length;
     const lgsContents = zip(this.state.lgs, this.props.contents);
     const columns = mapWithKey(([lg, content], i) =>
-      <Col lg={lg}>
+      <Col lg={lg} style={{
+        // borderLeft: i > 0 && '1px dotted #ddd',
+        borderRight: i < n && '1px dotted #ddd'
+      }}>
         <Row>
-          <Col lg={12} className={'text-center'}>
+          <Col lg={12} className={'text-center'} style={{
+            // 'marginBottom': '-1em',
+            // zIndex: 99999,
+          }}>
             {
               i > 0 &&
               <Button
                 bsSize="xsmall"
-                onClick={this.handleExpandLeft(i)}
-                disabled={this.state.lgs[i-1] <= 1}
-                title={'Click to expand this column to the left'}
+                className={'pull-left'}
+                style={{
+                  position: 'relative', right: '1.2em',
+                  zIndex: 99999,
+                }}
+                onClick={this.handleShrinkLeft(i)}
+                disabled={lg <= 1}
+                title={`(${lg}) Click to move column boundary`}
               >
-                {'<'}
+                {'>'}
               </Button>
             }
-            <Badge>{lg}</Badge>
+            {/*<Badge style={{width : '90%'}}>{lg}</Badge>*/}
             {
               i < n-1 &&
               <Button
                 bsSize="xsmall"
-                onClick={this.handleExpandRight(i)}
-                disabled={this.state.lgs[i+1] <= 1}
-                title={'Click to expand this column to the right'}
+                className={'pull-right'}
+                style={{
+                  position: 'relative', left: '1.2em',
+                  zIndex: 99999,
+                }}
+                onClick={this.handleShrinkRight(i)}
+                disabled={lg <= 1}
+                title={`(${lg}) Click to move column boundary`}
               >
-                {'>'}
+                {'<'}
               </Button>
             }
           </Col>
