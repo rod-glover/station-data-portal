@@ -19,12 +19,25 @@ import { groupByGeneral } from '../../../utils/fp';
 import logger from '../../../logger';
 
 import './VariableSelector.css';
+import cond from 'lodash/fp/cond';
+import isEqual from 'lodash/fp/isEqual';
+import constant from 'lodash/fp/constant';
+import isFunction from 'lodash/fp/isFunction';
+import stubTrue from 'lodash/fp/stubTrue';
+import identity from 'lodash/fp/identity';
 
 logger.configure({ active: true });
 
 
 // TODO: Update pcic-react-components GroupingSelector to communicate options
 // and reuse here? Right now there is a lot of repetition of function.
+
+const flattenOptions = flow(
+  map(group => group.options),
+  flatten,
+  filter(option => !option.isDisabled),
+);
+
 class VariableSelector extends Component {
   static propTypes = {
     allVariables: PropTypes.array.isRequired,
@@ -38,6 +51,7 @@ class VariableSelector extends Component {
   };
 
   componentDidMount() {
+    this.setDefault();
     const actions = {
       getAllOptions: this.getOptions,
       selectAll: this.handleClickAll,
@@ -45,6 +59,23 @@ class VariableSelector extends Component {
     };
     this.props.onReady(actions);
   }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.allVariables !== prevProps.allVariables) {
+      this.setDefault();
+    }
+  }
+
+  setDefault = () => {
+    const { defaultValue, onChange } = this.props;
+    const value = cond([
+      [isEqual('none'), constant([])],
+      [isFunction, filter],
+      [stubTrue, constant(identity)],
+    ])(defaultValue)(this.getFlattenedOptions());
+    console.log('### VS.setDefault', value)
+    onChange(value);
+  };
 
   static variableType = contexts => {
     const types = [
@@ -153,15 +184,9 @@ class VariableSelector extends Component {
   ));
 
   getOptions = () => this.makeOptions(this.props.allVariables);
+  getFlattenedOptions = () => flattenOptions(this.getOptions());
 
-  handleClickAll = () =>
-    this.props.onChange(
-      flow(
-        map(group => group.options),
-        flatten,
-        filter(option => !option.isDisabled),
-      )(this.makeOptions(this.props.allVariables))
-    );
+  handleClickAll = () => this.props.onChange(this.getFlattenedOptions());
 
   makeHandleClickGroup = group =>
     (() => this.props.onChange(group.options));

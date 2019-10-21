@@ -129,29 +129,17 @@ class Portal extends Component {
   handleSetArea = this.handleChange.bind(this, 'area');
 
   componentDidMount() {
-    // FIXME: The invocations of 'selectAll()` here are fragile, subject to a
-    //  race condition.
-    //  The selectors for each item (networks, variables, frequencies) call
-    //  back to populate `state.xxxActions`, and there is no guarantee
-    //  that they have done so by the time the promise settles. In fact, it's
-    //  astonishing that this works at all. Who wrote this junk anyway???
     getNetworks()
-      .then(response => this.setState({ allNetworks: response.data }))
-      .then(() => this.state.networkActions.selectAll())
-    ;
+      .then(response => this.setState({ allNetworks: response.data }));
     getVariables()
-      .then(response => this.setState({ allVariables: response.data }))
-      .then(() => this.state.variableActions.selectAll())
-    ;
+      .then(response => this.setState({ allVariables: response.data }));
+
     getStations({
       params: {
         // limit: 1000,
         stride: 10,  // load every 10th station
       },
-    })
-      .then(response => this.setState({ allStations: response.data }))
-      .then(() => this.state.frequencyActions.selectAll())
-    ;
+    }).then(response => this.setState({ allStations: response.data }));
   }
 
   stationFilter = memoize(stationFilter);

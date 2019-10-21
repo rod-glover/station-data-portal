@@ -3,7 +3,21 @@ import React, { Component } from 'react';
 import { Button, ControlLabel } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
-import { map, flow, filter, sortBy, toPairs, fromPairs, identity, assign, compose, tap } from 'lodash/fp';
+import map from 'lodash/fp/map';
+import flow from 'lodash/fp/flow';
+import filter from 'lodash/fp/filter';
+import sortBy from 'lodash/fp/sortBy';
+import toPairs from 'lodash/fp/toPairs';
+import fromPairs from 'lodash/fp/fromPairs';
+import identity from 'lodash/fp/identity';
+import assign from 'lodash/fp/assign';
+import tap from 'lodash/fp/tap';
+import cond from 'lodash/fp/cond';
+import isEqual from 'lodash/fp/isEqual';
+import constant from 'lodash/fp/constant';
+import isFunction from 'lodash/fp/isFunction';
+import stubTrue from 'lodash/fp/stubTrue';
+
 import { composeWithRestArgs } from '../../../utils/fp'
 import chroma from 'chroma-js';
 import logger from '../../../logger';
@@ -18,6 +32,10 @@ class NetworkSelector extends Component {
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
+    defaultValue: PropTypes.oneOfType([
+      PropTypes.oneOf(['all', 'none']),
+      PropTypes.func,
+    ]),
   };
 
   static defaultProps = {
@@ -25,6 +43,7 @@ class NetworkSelector extends Component {
   };
 
   componentDidMount() {
+    this.setDefault();
     const actions = {
       getAllOptions: this.getOptions,
       selectAll: this.handleClickAll,
@@ -32,6 +51,23 @@ class NetworkSelector extends Component {
     };
     this.props.onReady(actions);
   }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.allNetworks !== prevProps.allNetworks) {
+      this.setDefault();
+    }
+  }
+
+  setDefault = () => {
+    const { defaultValue, onChange } = this.props;
+    const value = cond([
+      [isEqual('none'), constant([])],
+      [isFunction, filter],
+      [stubTrue, constant(identity)],
+    ])(defaultValue)(this.getOptions());
+    console.log('### NS.setDefault', value)
+    onChange(value);
+  };
 
   // This function must be an instance property to be memoized correctly.
   makeOptions = memoize(allNetworks => (
