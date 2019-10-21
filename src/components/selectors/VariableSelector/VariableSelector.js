@@ -17,6 +17,7 @@ import { defaultValue, defaultValueSelector } from '../common';
 import logger from '../../../logger';
 
 import './VariableSelector.css';
+import LocalPropTypes from '../../local-prop-types';
 
 logger.configure({ active: true });
 
@@ -36,6 +37,7 @@ class VariableSelector extends Component {
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
+    defaultValueSelector: LocalPropTypes.defaultValueSelector,
   };
 
   static defaultProps = {

@@ -7,6 +7,7 @@ import find from 'lodash/fp/find';
 import { defaultValue } from '../common';
 import logger from '../../../logger';
 import './FrequencySelector.css';
+import LocalPropTypes from '../../local-prop-types';
 
 logger.configure({ active: true });
 
@@ -39,10 +40,7 @@ class FrequencySelector extends Component {
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
-    defaultValueSelector: PropTypes.oneOfType([
-      PropTypes.oneOf(['all', 'none']),
-      PropTypes.func,
-    ]),
+    defaultValueSelector: LocalPropTypes.defaultValueSelector,
   };
 
   static defaultProps = {

@@ -18,6 +18,7 @@ import chroma from 'chroma-js';
 import logger from '../../../logger';
 import './NetworkSelector.css';
 import { defaultValue } from '../common';
+import LocalPropTypes from '../../local-prop-types';
 
 logger.configure({ active: true });
 
@@ -28,10 +29,7 @@ class NetworkSelector extends Component {
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
-    defaultValueSelector: PropTypes.oneOfType([
-      PropTypes.oneOf(['all', 'none']),
-      PropTypes.func,
-    ]),
+    defaultValueSelector: LocalPropTypes.defaultValueSelector,
   };
 
   static defaultProps = {
