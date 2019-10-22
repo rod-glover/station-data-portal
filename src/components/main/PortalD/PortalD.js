@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Col, Row, Tab, Tabs } from 'react-bootstrap';
+import { Button, Col, Panel, Row, Tab, Tabs } from 'react-bootstrap';
 import memoize from 'memoize-one';
 import flow from 'lodash/fp/flow';
 import map from 'lodash/fp/map';
@@ -215,137 +215,137 @@ class Portal extends Component {
                 onSetArea={this.handleSetArea}
               />,
 
-              <Row>
-                <Tabs defaultActiveKey={'Filters'}>
-                  <Tab eventKey={'Filters'} title={'Filters'}>
-                    <Row>
-                      <Col lg={6} md={6} sm={6}>
-                        {/*<Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>*/}
-                        {/*<Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>*/}
-                        <DateSelector
-                          value={this.state.startDate}
-                          onChange={this.handleChangeStartDate}
-                          label={'Start Date'}
-                        />
-                      </Col>
+              <Panel style={{ marginLeft: '-15px', marginRight: '-10px' }}>
+                <Panel.Body>
+                  <Tabs defaultActiveKey={'Filters'}>
+                    <Tab eventKey={'Filters'} title={'Station Filters'}>
+                      <Row>
                         <Col lg={6} md={6} sm={6}>
-                        <DateSelector
-                          value={this.state.endDate}
-                          onChange={this.handleChangeEndDate}
-                          label={'End Date'}
-                        />
-                      </Col>
-                      <Col lg={12} md={12} sm={12}>
-                        <OnlyWithClimatologyControl
-                          value={this.state.onlyWithClimatology}
-                          onChange={this.toggleOnlyWithClimatology}
-                        />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg={12} md={12} sm={12}>
-                        <NetworkSelector
-                          allNetworks={this.state.allNetworks}
-                          onReady={this.handleNetworkSelectorReady}
-                          value={this.state.selectedNetworks}
-                          onChange={this.handleChangeNetwork}
-                          isSearchable
-                          isClearable={false}
-                          styles={commonSelectorStyles}
-                        />
-                        {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg={12} md={12} sm={12}>
-                        <VariableSelector
-                          allVariables={this.state.allVariables}
-                          onReady={this.handleVariableSelectorReady}
-                          value={this.state.selectedVariables}
-                          onChange={this.handleChangeVariable}
-                          isSearchable
-                          isClearable={false}
-                          styles={commonSelectorStyles}
-                        />
-                        {/*<JSONstringify object={this.state.selectedVariables}/>*/}
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg={12} md={12} sm={12}>
-                        <FrequencySelector
-                          onReady={this.handleFrequencySelectorReady}
-                          value={this.state.selectedFrequencies}
-                          onChange={this.handleChangeFrequency}
-                          isClearable={false}
-                          styles={commonSelectorStyles}
-                        />
-                        {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
-                      </Col>
-                    </Row>
-                  </Tab>
+                          {/*<Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>*/}
+                          {/*<Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>*/}
+                          <DateSelector
+                            value={this.state.startDate}
+                            onChange={this.handleChangeStartDate}
+                            label={'Start Date'}
+                          />
+                        </Col>
+                          <Col lg={6} md={6} sm={6}>
+                          <DateSelector
+                            value={this.state.endDate}
+                            onChange={this.handleChangeEndDate}
+                            label={'End Date'}
+                          />
+                        </Col>
+                        <Col lg={12} md={12} sm={12}>
+                          <OnlyWithClimatologyControl
+                            value={this.state.onlyWithClimatology}
+                            onChange={this.toggleOnlyWithClimatology}
+                          />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col lg={12} md={12} sm={12}>
+                          <NetworkSelector
+                            allNetworks={this.state.allNetworks}
+                            onReady={this.handleNetworkSelectorReady}
+                            value={this.state.selectedNetworks}
+                            onChange={this.handleChangeNetwork}
+                            isSearchable
+                            isClearable={false}
+                            styles={commonSelectorStyles}
+                          />
+                          {/*<JSONstringify object={this.state.selectedNetworks}/>*/}
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col lg={12} md={12} sm={12}>
+                          <VariableSelector
+                            allVariables={this.state.allVariables}
+                            onReady={this.handleVariableSelectorReady}
+                            value={this.state.selectedVariables}
+                            onChange={this.handleChangeVariable}
+                            isSearchable
+                            isClearable={false}
+                            styles={commonSelectorStyles}
+                          />
+                          {/*<JSONstringify object={this.state.selectedVariables}/>*/}
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col lg={12} md={12} sm={12}>
+                          <FrequencySelector
+                            onReady={this.handleFrequencySelectorReady}
+                            value={this.state.selectedFrequencies}
+                            onChange={this.handleChangeFrequency}
+                            isClearable={false}
+                            styles={commonSelectorStyles}
+                          />
+                          {/*<JSONstringify object={this.state.selectedFrequencies}/>*/}
+                        </Col>
+                      </Row>
+                    </Tab>
 
-                  <Tab eventKey={'Stations and Metadata'} title={'Stations and Metadata'}>
-                    <Button disabled>
-                      Download Metadata
-                    </Button>
-
-                    <p>{filteredStations.length} stations selected</p>
-                    <StationMetadata
-                      stations={filteredStations}
-                      allNetworks={this.state.allNetworks}
-                    />
-
-                  </Tab>
-
-                  <Tab eventKey={'Download Data'} title={'Download Data'}>
-                    <h1>Station Data</h1>
-
-                    <FileFormatSelector
-                      value={this.state.fileFormat}
-                      onChange={this.handleChangeFileFormat}
-                    />
-
-                    <ClipToDateControl
-                      value={this.state.clipToDate}
-                      onChange={this.toggleClipToDate}
-                    />
-
-                    <ButtonToolbar>
-                      <Button onClick={this.downloadTimeseries}>
-                        Download Timeseries
+                    <Tab eventKey={'Metadata'} title={'Station Metadata'}>
+                      <Button disabled>
+                        Download Metadata
                       </Button>
-                      <Button onClick={this.downloadClimatology}>
-                        Download Climatology
-                      </Button>
-                    </ButtonToolbar>
 
-                    <h1>Overview</h1>
-                    <p>{
-                      this.state.allStations ?
-                        `${this.state.allStations.length} stations available.` :
-                        `Loading station info ... (this may take a couple of minutes)`
-                    }</p>
-                    <p>{`
-            Available stations are filtered by
-            the network they are part of,
-            the variable(s) they observe,
-            and the frequency of obervation.
-            Stations matching selected criteria are displayed on the map.
-            `}</p>
-                    {
-                      this.state.allStations &&
-                      <p>{`${filteredStations.length || 'No'} stations match criteria.`}</p>
-                    }
-                    {
-                      unselectedThings &&
-                      <p>You haven't selected any {unselectedThings}.</p>
-                    }
+                      <p>{filteredStations.length} stations selected</p>
+                      <StationMetadata
+                        stations={filteredStations}
+                        allNetworks={this.state.allNetworks}
+                      />
 
-                    <ObservationCounts stations={filteredStations}/>
-                  </Tab>
+                    </Tab>
 
-                </Tabs>
-              </Row>
+                    <Tab eventKey={'Data'} title={'Station Data'}>
+                      <FileFormatSelector
+                        value={this.state.fileFormat}
+                        onChange={this.handleChangeFileFormat}
+                      />
+
+                      <ClipToDateControl
+                        value={this.state.clipToDate}
+                        onChange={this.toggleClipToDate}
+                      />
+
+                      <ButtonToolbar>
+                        <Button onClick={this.downloadTimeseries}>
+                          Download Timeseries
+                        </Button>
+                        <Button onClick={this.downloadClimatology}>
+                          Download Climatology
+                        </Button>
+                      </ButtonToolbar>
+
+                      <h1>Overview</h1>
+                      <p>{
+                        this.state.allStations ?
+                          `${this.state.allStations.length} stations available.` :
+                          `Loading station info ... (this may take a couple of minutes)`
+                      }</p>
+                      <p>{`
+              Available stations are filtered by
+              the network they are part of,
+              the variable(s) they observe,
+              and the frequency of obervation.
+              Stations matching selected criteria are displayed on the map.
+              `}</p>
+                      {
+                        this.state.allStations &&
+                        <p>{`${filteredStations.length || 'No'} stations match criteria.`}</p>
+                      }
+                      {
+                        unselectedThings &&
+                        <p>You haven't selected any {unselectedThings}.</p>
+                      }
+
+                      <ObservationCounts stations={filteredStations}/>
+                    </Tab>
+
+                  </Tabs>
+                </Panel.Body>
+              </Panel>
 
             ]}
           />
