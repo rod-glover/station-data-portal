@@ -1,3 +1,7 @@
+.react-datepicker__input-container input {
+    width: 7.5em;
+}
+
 .react-datepicker-popper {
     z-index: 9999;
 }
