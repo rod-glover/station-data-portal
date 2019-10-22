@@ -21,9 +21,10 @@ import tap from 'lodash/fp/tap';
 import { composeWithRestArgs } from '../../../utils/fp'
 import chroma from 'chroma-js';
 import logger from '../../../logger';
-import './NetworkSelector.css';
 import { defaultValue } from '../common';
 import LocalPropTypes from '../../local-prop-types';
+
+import css from '../common.module.css';
 
 logger.configure({ active: true });
 
@@ -125,9 +126,9 @@ class NetworkSelector extends Component {
     return (
       <FormGroup>
         <div><ControlLabel>Network</ControlLabel></div>
-        <ButtonToolbar>
-        <Button bsSize={'xsmall'} onClick={this.handleClickAll}>All</Button>
-        <Button bsSize={'xsmall'} onClick={this.handleClickNone}>None</Button>
+        <ButtonToolbar className={css.selectorButtons}>
+          <Button bsSize={'xsmall'} onClick={this.handleClickAll}>All</Button>
+          <Button bsSize={'xsmall'} onClick={this.handleClickNone}>None</Button>
         </ButtonToolbar>
         <Select
           options={this.getOptions()}
