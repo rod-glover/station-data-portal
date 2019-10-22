@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Button, ControlLabel, FormGroup } from 'react-bootstrap';
+import { Button, ButtonToolbar, ControlLabel, FormGroup } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
 import map from 'lodash/fp/map';
@@ -188,19 +188,21 @@ class VariableSelector extends Component {
     return (
       <FormGroup>
         <div><ControlLabel>Variable</ControlLabel></div>
-        <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
+        <ButtonToolbar>
+        <Button bsSize={'xsmall'} onClick={this.handleClickAll}>All</Button>
         {
           map(group => (
             <Button
               key={group.label}
-              bsSize={'small'}
+              bsSize={'xsmall'}
               onClick={this.makeHandleClickGroup(group)}
             >
               {`All ${group.label}`}
             </Button>
           ))(options)
         }
-        <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
+        <Button bsSize={'xsmall'} onClick={this.handleClickNone}>None</Button>
+        </ButtonToolbar>
         <Select
           options={options}
           placeholder={
