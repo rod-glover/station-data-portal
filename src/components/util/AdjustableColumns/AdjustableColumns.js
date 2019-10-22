@@ -139,9 +139,7 @@ export default class AdjustableColumns extends Component {
           </Col>
         </Row>
         <Row>
-          <Col lg={12} style={{
-            borderRight: i < n && '1px dotted #ddd'
-          }}>{content}</Col>
+          <Col lg={12}>{content}</Col>
         </Row>
       </Col>
     )(lgsContents);
