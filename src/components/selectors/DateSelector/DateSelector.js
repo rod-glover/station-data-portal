@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Col, ControlLabel, FormGroup } from 'react-bootstrap';
+import { ControlLabel, FormGroup } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import { range } from 'lodash';
 
