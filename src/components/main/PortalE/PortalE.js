@@ -199,7 +199,7 @@ class Portal extends Component {
           <AdjustableColumns
             defaultLgs={defaultLgs}
             contents={[
-              <Panel style={{ margin: '0 -15px' }}>
+              <Panel style={{ marginLeft: '-10px', marginRight: '-15px' }}>
                 <Panel.Heading>Station Filters</Panel.Heading>
                 <Panel.Body>
                   <p>{`
@@ -281,70 +281,68 @@ class Portal extends Component {
                 onSetArea={this.handleSetArea}
               />,
 
-              <Row>
-                <Tabs defaultActiveKey={'Stations and Metadata'}>
-                  <Tab eventKey={'Stations and Metadata'} title={'Stations and Metadata'}>
-                    <Button disabled>
-                      Download Metadata
-                    </Button>
-
-                    <p>{filteredStations.length} stations selected</p>
-                    <StationMetadata
-                      stations={filteredStations}
-                      allNetworks={this.state.allNetworks}
-                    />
-
-                  </Tab>
-
-                  <Tab eventKey={'Download Data'} title={'Download Data'}>
-                    <h1>Station Data</h1>
-
-                    <FileFormatSelector
-                      value={this.state.fileFormat}
-                      onChange={this.handleChangeFileFormat}
-                    />
-
-                    <ClipToDateControl
-                      value={this.state.clipToDate}
-                      onChange={this.toggleClipToDate}
-                    />
-
-                    <ButtonToolbar>
-                      <Button href={this.downloadTarget('timeseries')}>
-                        Download Timeseries
+              <Panel style={{ marginLeft: '-15px', marginRight: '-10px' }}>
+                <Panel.Heading>Selected Stations</Panel.Heading>
+                <Panel.Body>
+                  <Tabs defaultActiveKey={'Metadata'}>
+                    <Tab eventKey={'Metadata'} title={'Metadata'}>
+                      <Button disabled>
+                        Download Metadata
                       </Button>
-                      <Button href={this.downloadTarget('climatology')}>
-                        Download Climatology
-                      </Button>
-                    </ButtonToolbar>
 
-                    <h1>Overview</h1>
-                    <p>{
-                      this.state.allStations ?
-                        `${this.state.allStations.length} stations available.` :
-                        `Loading station info ... (this may take a couple of minutes)`
-                    }</p>
-                    <p>{`
-            Available stations are filtered by
-            the network they are part of,
-            the variable(s) they observe,
-            and the frequency of obervation.
-            Stations matching selected criteria are displayed on the map.
-            `}</p>
-                    {
-                      this.state.allStations &&
-                      <p>{`${filteredStations.length || 'No'} stations match criteria.`}</p>
-                    }
-                    {
-                      unselectedThings &&
-                      <p>You haven't selected any {unselectedThings}.</p>
-                    }
+                      <p>{filteredStations.length} stations selected</p>
+                      <StationMetadata
+                        stations={filteredStations}
+                        allNetworks={this.state.allNetworks}
+                      />
 
-                    <ObservationCounts stations={filteredStations}/>
-                  </Tab>
+                    </Tab>
 
-                </Tabs>
-              </Row>
+                    <Tab eventKey={'Data'} title={'Data'}>
+                      <p>{
+                        this.state.allStations ?
+                          `${filteredStations.length} stations selected of
+                    ${this.state.allStations ? this.state.allStations.length : 0} available` :
+                          `Loading station info ... (this may take a couple of minutes)`
+                      }</p>
+                      <p>{`
+              Available stations are filtered by
+              the network they are part of,
+              the variable(s) they observe,
+              and the frequency of obervation.
+              Stations matching selected criteria are displayed on the map.
+              `}</p>
+                      {
+                        unselectedThings &&
+                        <p>You haven't selected any {unselectedThings}.</p>
+                      }
+
+                      <ObservationCounts stations={filteredStations}/>
+
+                      <FileFormatSelector
+                        value={this.state.fileFormat}
+                        onChange={this.handleChangeFileFormat}
+                      />
+
+                      <ClipToDateControl
+                        value={this.state.clipToDate}
+                        onChange={this.toggleClipToDate}
+                      />
+
+                      <ButtonToolbar>
+                        <Button href={this.downloadTarget('timeseries')}>
+                          Download Timeseries
+                        </Button>
+                        <Button href={this.downloadTarget('climatology')}>
+                          Download Climatology
+                        </Button>
+                      </ButtonToolbar>
+
+                    </Tab>
+
+                  </Tabs>
+                </Panel.Body>
+              </Panel>
 
             ]}
           />
