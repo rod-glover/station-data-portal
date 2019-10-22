@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Panel, Tabs, Tab } from 'react-bootstrap';
-import { FeatureGroup, LayerGroup } from 'react-leaflet';
-import { EditControl } from 'react-leaflet-draw';
+import {
+  Row, Col,
+  Button,
+  Panel,
+  Tabs, Tab
+} from 'react-bootstrap';
 import memoize from 'memoize-one';
 import flow from 'lodash/fp/flow';
 import map from 'lodash/fp/map';
@@ -207,22 +210,20 @@ class Portal extends Component {
                     <Col lg={6} md={6} sm={6}>
                       {/*<Button bsSize={'small'} onClick={this.handleClickAll}>Select all criteria</Button>*/}
                       {/*<Button bsSize={'small'} onClick={this.handleClickNone}>Clear all criteria</Button>*/}
-                      <div>
-                        <DateSelector
-                          value={this.state.startDate}
-                          onChange={this.handleChangeStartDate}
-                          label={'Start Date'}
-                        />
-                      </div>
-                      <div>
-                        <DateSelector
-                          value={this.state.endDate}
-                          onChange={this.handleChangeEndDate}
-                          label={'End Date'}
-                        />
-                      </div>
+                      <DateSelector
+                        value={this.state.startDate}
+                        onChange={this.handleChangeStartDate}
+                        label={'Start Date'}
+                      />
                     </Col>
                     <Col lg={6} md={6} sm={6}>
+                      <DateSelector
+                        value={this.state.endDate}
+                        onChange={this.handleChangeEndDate}
+                        label={'End Date'}
+                      />
+                    </Col>
+                    <Col lg={12} md={12} sm={12}>
                       <OnlyWithClimatologyControl
                         value={this.state.onlyWithClimatology}
                         onChange={this.toggleOnlyWithClimatology}
