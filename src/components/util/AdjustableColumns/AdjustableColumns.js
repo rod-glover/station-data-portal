@@ -25,7 +25,6 @@ export default class AdjustableColumns extends Component {
       throw new Error(
         'Number of column widths and number of columns do not match');
     }
-    const numColumns = this.props.defaultLgs.length;
     this.state = {
       lgs: clone(props.defaultLgs),
     }
@@ -67,16 +66,13 @@ export default class AdjustableColumns extends Component {
       this.state.lgs,
       this.props.contents
     ]);
-    console.log('### render', lgsContents)
     const columns = mapWithKey(([lg, content], i) =>
-      <Col lg={lg} lgHidden={lg === 0} style={{
-        // borderLeft: i > 0 && '1px dotted #ddd',
-        borderRight: i < n && '1px dotted #ddd'
-      }}>
+      <Col lg={lg} lgHidden={lg === 0}>
         <Row>
           <Col lg={12} className={'text-center'} style={{
-            // 'marginBottom': '-1em',
-            // zIndex: 99999,
+            'marginBottom': '-0.5em',
+            borderRight: i < n && '1px solid #777',
+            zIndex: 99999,
           }}>
             {
               i > 0 && <ButtonGroup
@@ -109,7 +105,6 @@ export default class AdjustableColumns extends Component {
                 </Button>
               </ButtonGroup>
             }
-            <Badge>{lg}</Badge>
             {
               i < n-1 && <ButtonGroup
                 className={'pull-right'}
@@ -144,7 +139,9 @@ export default class AdjustableColumns extends Component {
           </Col>
         </Row>
         <Row>
-          <Col lg={12}>{content}</Col>
+          <Col lg={12} style={{
+            borderRight: i < n && '1px dotted #ddd'
+          }}>{content}</Col>
         </Row>
       </Col>
     )(lgsContents);
