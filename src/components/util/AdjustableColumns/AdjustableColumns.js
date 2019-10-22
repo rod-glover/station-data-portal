@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Row, Col, Badge, Button } from 'react-bootstrap';
+import { Row, Col, Badge, Button, ButtonGroup } from 'react-bootstrap';
 import clone from 'lodash/fp/clone';
 import concat from 'lodash/concat';  // Note: Not FP!
-import map from 'lodash/fp/map';
 import slice from 'lodash/fp/slice';
-import zip from 'lodash/fp/zip';
+import zipAll from 'lodash/fp/zipAll';
 
 import logger from '../../../logger';
 
@@ -31,64 +30,118 @@ export default class AdjustableColumns extends Component {
     }
   }
 
-  handleExpandLeft = index => () => this.setState(state => {
+  handleShrinkLeftBy = amount => index => () => this.setState(state => {
     const lgs = state.lgs;
+    const n = lgs.length;
+    const amt = Math.min(amount, lgs[index]);
+    const newSelfWidth = lgs[index] - amt;
     return {
       lgs: concat(
         slice(0, index-1, lgs),
-        lgs[index-1] - 1,
-        lgs[index] + 1,
-        slice(index+1, lgs.length, lgs),
+        lgs[index-1] + amt,   // Expand L neighbout
+        newSelfWidth,         // Shrink self
+        slice(index+1, n, lgs),
       )
     }
   });
 
-  handleExpandRight = index => () => this.setState(state => {
+  handleShrinkRightBy = amount => index => () => this.setState(state => {
     const lgs = state.lgs;
+    const n = lgs.length;
+    const amt = Math.min(amount, lgs[index]);
+    const newSelfWidth = lgs[index] - amt;
     return {
       lgs: concat(
         slice(0, index, lgs),
-        lgs[index] + 1,
-        lgs[index+1] - 1,
-        slice(index+2, lgs.length, lgs),
+        newSelfWidth,
+        lgs[index+1] + amt,
+        slice(index+2, n, lgs),
       )
     }
   });
 
   render() {
     const n = this.props.contents.length;
-    const lgsContents = zip(this.state.lgs, this.props.contents);
+    const lgsContents = zipAll([
+      this.state.lgs,
+      this.props.contents
+    ]);
     const columns = mapWithKey(([lg, content], i) =>
-      <Col lg={lg}>
+      <Col lg={lg} lgHidden={lg === 0}>
         <Row>
-          <Col lg={12} className={'text-center'}>
+          <Col lg={12} className={'text-center'} style={{
+            'marginBottom': '-0.5em',
+            borderRight: i < n && '1px solid #777',
+            zIndex: 99999,
+          }}>
             {
-              i > 0 &&
-              <Button
-                bsSize="xsmall"
-                onClick={this.handleExpandLeft(i)}
-                disabled={this.state.lgs[i-1] <= 1}
-                title={'Click to expand this column to the left'}
+              i > 0 && <ButtonGroup
+                className={'pull-left'}
+                style={{
+                  position: 'relative', right: '1em',
+                  zIndex: 99999,
+                }}
               >
-                {'<'}
-              </Button>
+                {lg > 1 && <Button
+                  bsSize="xsmall"
+                  onClick={this.handleShrinkLeftBy(1)(i)}
+                  title={`(${lg}) Click to move column boundary`}
+                >
+                  {'>'}
+                </Button>}
+                {lg > 2 && <Button
+                  bsSize="xsmall"
+                  onClick={this.handleShrinkLeftBy(2)(i)}
+                  title={`(${lg}) Click to move column boundary`}
+                >
+                  {'>>'}
+                </Button>}
+                <Button
+                  bsSize="xsmall"
+                  onClick={this.handleShrinkLeftBy(lg)(i)}
+                  title={`(${lg}) Click to hide column`}
+                >
+                  {'>!'}
+                </Button>
+              </ButtonGroup>
             }
-            <Badge>{lg}</Badge>
             {
-              i < n-1 &&
-              <Button
-                bsSize="xsmall"
-                onClick={this.handleExpandRight(i)}
-                disabled={this.state.lgs[i+1] <= 1}
-                title={'Click to expand this column to the right'}
+              i < n-1 && <ButtonGroup
+                className={'pull-right'}
+                style={{
+                  position: 'relative', left: '1em',
+                  zIndex: 99999,
+                }}
               >
-                {'>'}
-              </Button>
+                <Button
+                  bsSize="xsmall"
+                  onClick={this.handleShrinkRightBy(lg)(i)}
+                  title={`(${lg}) Click to hide column`}
+                >
+                  {'!<'}
+                </Button>
+                {lg > 2 && <Button
+                  bsSize="xsmall"
+                  onClick={this.handleShrinkRightBy(2)(i)}
+                  title={`(${lg}) Click to move column boundary`}
+                >
+                  {'<<'}
+                </Button>}
+                {lg > 1 && <Button
+                  bsSize="xsmall"
+                  onClick={this.handleShrinkRightBy(1)(i)}
+                  title={`(${lg}) Click to move column boundary`}
+                >
+                  {'<'}
+                </Button>}
+              </ButtonGroup>
             }
           </Col>
         </Row>
         <Row>
-          <Col lg={12}>{content}</Col>
+          <Col lg={12} style={{
+            borderRight: i < n && '1px dotted #ddd'
+          }}>{content}</Col>
         </Row>
       </Col>
     )(lgsContents);
