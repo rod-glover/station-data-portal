@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import './OnlyWithClimatologyControl.css';
-import { Checkbox, ControlLabel } from 'react-bootstrap';
+import { Checkbox } from 'react-bootstrap';
 
 export default class OnlyWithClimatologyControl extends Component {
   static propTypes = {
@@ -14,7 +14,7 @@ export default class OnlyWithClimatologyControl extends Component {
     const { value, ...rest } = this.props;
     return (
       <Checkbox checked={value} {...rest}>
-        <ControlLabel>Only include stations with climatology</ControlLabel>
+        Only include stations with climatology
       </Checkbox>
     );
   }
