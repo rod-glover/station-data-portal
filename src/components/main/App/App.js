@@ -8,20 +8,14 @@ import { LinkContainer } from 'react-router-bootstrap';
 import logger from '../../../logger';
 import Header from '../Header/Header';
 
-import PortalA from '../PortalA';
-import PortalB from '../PortalB';
-import PortalC from '../PortalC';
 import PortalD from '../PortalD';
 import PortalE from '../PortalE';
 
 import './App.css';
 
 const navSpec = [
-  { label: 'Version A', path: 'A', component: PortalA },
-  { label: 'Version B', path: 'B', component: PortalB },
-  { label: 'Version C', path: 'C', component: PortalC },
-  { label: 'Version D', path: 'D', component: PortalD },
-  { label: 'Version E', path: 'E', component: PortalE },
+  { label: 'Version A', path: 'A', component: PortalD },
+  { label: 'Version B', path: 'B', component: PortalE },
 ];
 
 
@@ -52,7 +46,7 @@ export default class App extends Component {
                         <Route path={`/${path}`} component={component}/>
                       ))
                     }
-                    <Redirect to={'/D'}/>
+                    <Redirect to={'/A'}/>
                   </Switch>
               </Grid>
             </div>
