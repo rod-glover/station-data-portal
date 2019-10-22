@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ControlLabel } from 'react-bootstrap';
+import { Col, ControlLabel, FormGroup } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import { range } from 'lodash';
 
@@ -44,8 +44,8 @@ class DateSelector extends Component {
     // Custom header adapted from https://github.com/Hacker0x01/react-datepicker/blob/master/docs-site/src/examples/render_custom_header.jsx
     const { value, onChange, label, ...restProps } = this.props;
     return (
-      <React.Fragment>
-        <ControlLabel>{label}{' '}</ControlLabel>
+      <FormGroup>
+        <ControlLabel>{label}</ControlLabel>{' '}
         <DatePicker
           selected={value}
           onChange={onChange}
@@ -107,7 +107,7 @@ class DateSelector extends Component {
           calendarContainer={CalendarContainer}
           {...restProps}
         />
-      </React.Fragment>
+      </FormGroup>
     );
   }
 }

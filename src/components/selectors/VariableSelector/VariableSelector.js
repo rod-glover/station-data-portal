@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Button, ControlLabel } from 'react-bootstrap';
+import { Button, ControlLabel, FormGroup } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
 import map from 'lodash/fp/map';
@@ -186,7 +186,7 @@ class VariableSelector extends Component {
   render() {
     const options = this.getOptions();
     return (
-      <div>
+      <FormGroup>
         <div><ControlLabel>Variable</ControlLabel></div>
         <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
         {
@@ -209,7 +209,7 @@ class VariableSelector extends Component {
           {...this.props}
           isMulti
         />
-      </div>
+      </FormGroup>
     );
   }
 }

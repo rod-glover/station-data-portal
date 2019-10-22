@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Button, ControlLabel } from 'react-bootstrap';
+import { Button, ControlLabel, FormGroup } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
 import map from 'lodash/fp/map';
@@ -118,7 +118,7 @@ class NetworkSelector extends Component {
     );
 
     return (
-      <div>
+      <FormGroup>
         <div><ControlLabel>Network</ControlLabel></div>
         <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
         <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
@@ -131,7 +131,7 @@ class NetworkSelector extends Component {
           styles={composedStyles}
           isMulti
         />
-      </div>
+      </FormGroup>
     );
   }
 }
