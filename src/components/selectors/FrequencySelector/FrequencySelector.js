@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Button, ControlLabel } from 'react-bootstrap';
+import { Button, ControlLabel, FormGroup } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
 import find from 'lodash/fp/find';
@@ -75,7 +75,7 @@ class FrequencySelector extends Component {
 
   render() {
     return (
-      <div>
+      <FormGroup>
         <div><ControlLabel>Observation Frequency</ControlLabel></div>
         <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
         <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
@@ -84,7 +84,7 @@ class FrequencySelector extends Component {
           {...this.props}
           isMulti
         />
-      </div>
+      </FormGroup>
     );
   }
 }
