@@ -14,7 +14,7 @@ import PortalE from '../PortalE';
 import './App.css';
 
 const getLocation = url => {
-  const a = window.document.createELement('a');
+  const a = window.document.createElement('a');
   a.href = url;
   return a;
 };
@@ -29,7 +29,7 @@ export default class App extends Component {
     render() {
       const basePath = getLocation(process.env.PUBLIC_URL).pathname;
       return (
-        <Router basename={`${basePath}/#`}>
+        <Router basename={`${basePath}#`}>
           <div>
             <Navbar fluid>
               <Nav>
