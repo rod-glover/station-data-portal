@@ -29,7 +29,7 @@ export default class App extends Component {
     render() {
       const basePath = getLocation(process.env.PUBLIC_URL).pathname;
       return (
-        <Router basename={`${basePath}#`}>
+        <Router basename={`${basePath}/#`}>
           <div>
             <Navbar fluid>
               <Nav>
