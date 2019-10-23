@@ -11,7 +11,7 @@ import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
 import join from 'lodash/fp/join';
 
-import './PortalE.css';
+import css from '../common.module.css';
 
 import logger from '../../../logger';
 import NetworkSelector from '../../selectors/NetworkSelector';
@@ -194,7 +194,7 @@ class Portal extends Component {
     )(selections);
 
     return (
-      <React.Fragment>
+      <div className={css.portal}>
         <Row>
           <AdjustableColumns
             defaultLgs={defaultLgs}
@@ -284,7 +284,7 @@ class Portal extends Component {
               <Panel style={{ marginLeft: '-15px', marginRight: '-10px' }}>
                 <Panel.Heading>Selected Stations</Panel.Heading>
                 <Panel.Body>
-                  <Tabs defaultActiveKey={'Metadata'}>
+                  <Tabs defaultActiveKey={'Metadata'} className={css.mainTabs}>
                     <Tab eventKey={'Metadata'} title={'Metadata'}>
                       <Button disabled>
                         Download Metadata
@@ -347,7 +347,7 @@ class Portal extends Component {
             ]}
           />
         </Row>
-      </React.Fragment>
+      </div>
     );
   }
 }

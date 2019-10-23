@@ -6,7 +6,7 @@ import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
 import join from 'lodash/fp/join';
 
-import './PortalD.css';
+import css from '../common.module.css';
 
 import logger from '../../../logger';
 import NetworkSelector from '../../selectors/NetworkSelector';
@@ -203,7 +203,7 @@ class Portal extends Component {
     )(selections);
 
     return (
-      <React.Fragment>
+      <div className={css.portal}>
         <Row>
           <AdjustableColumns
             defaultLgs={defaultLgs}
@@ -217,7 +217,7 @@ class Portal extends Component {
 
               <Panel style={{ marginLeft: '-15px', marginRight: '-10px' }}>
                 <Panel.Body>
-                  <Tabs defaultActiveKey={'Filters'}>
+                  <Tabs defaultActiveKey={'Filters'} className={css.mainTabs}>
                     <Tab eventKey={'Filters'} title={'Station Filters'}>
                       <Row>
                         <Col lg={6} md={6} sm={6}>
@@ -350,7 +350,7 @@ class Portal extends Component {
             ]}
           />
         </Row>
-      </React.Fragment>
+      </div>
     );
   }
 }
