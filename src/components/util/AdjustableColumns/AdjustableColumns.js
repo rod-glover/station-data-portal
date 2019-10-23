@@ -8,7 +8,6 @@ import zipAll from 'lodash/fp/zipAll';
 
 import logger from '../../../logger';
 
-import './AdjustableColumns.css';
 import { mapWithKey } from '../../../utils/fp';
 
 logger.configure({ active: true });

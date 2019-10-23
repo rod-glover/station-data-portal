@@ -1,0 +1,9 @@
+.portal :global(.leaflet-container) {
+    height: 800px;
+    width: 100%;
+}
+
+.portal .mainTabs :global(.nav-tabs) {
+    margin-bottom: 15px;
+}
+

@@ -7,9 +7,6 @@ import { Polygon } from 'react-leaflet';
 
 import _ from 'lodash';
 
-import './SimpleGeoJSON.css';
-
-
 const geoJSONPosition2LeafletPosition = (geoJSONPosition) =>
   [geoJSONPosition[1], geoJSONPosition[0]];
 

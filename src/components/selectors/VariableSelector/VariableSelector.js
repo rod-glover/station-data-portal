@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Button, ControlLabel, FormGroup } from 'react-bootstrap';
+import { Button, ButtonToolbar, ControlLabel, FormGroup } from 'react-bootstrap';
 import Select from 'react-select';
 import memoize from 'memoize-one';
 import map from 'lodash/fp/map';
@@ -12,12 +12,13 @@ import sortBy from 'lodash/fp/sortBy';
 import flow from 'lodash/fp/flow';
 import tap from 'lodash/fp/tap';
 import { groupByGeneral } from '../../../utils/fp';
-import { defaultValue, defaultValueSelector } from '../common';
+import { defaultValue } from '../common';
 
 import logger from '../../../logger';
 
-import './VariableSelector.css';
 import LocalPropTypes from '../../local-prop-types';
+
+import css from '../common.module.css';
 
 logger.configure({ active: true });
 
@@ -188,19 +189,21 @@ class VariableSelector extends Component {
     return (
       <FormGroup>
         <div><ControlLabel>Variable</ControlLabel></div>
-        <Button bsSize={'small'} onClick={this.handleClickAll}>All</Button>
-        {
-          map(group => (
-            <Button
-              key={group.label}
-              bsSize={'small'}
-              onClick={this.makeHandleClickGroup(group)}
-            >
-              {`All ${group.label}`}
-            </Button>
-          ))(options)
-        }
-        <Button bsSize={'small'} onClick={this.handleClickNone}>None</Button>
+        <ButtonToolbar className={css.selectorButtons}>
+          <Button bsSize={'xsmall'} onClick={this.handleClickAll}>All</Button>
+          {
+            map(group => (
+              <Button
+                key={group.label}
+                bsSize={'xsmall'}
+                onClick={this.makeHandleClickGroup(group)}
+              >
+                {`All ${group.label}`}
+              </Button>
+            ))(options)
+          }
+          <Button bsSize={'xsmall'} onClick={this.handleClickNone}>None</Button>
+        </ButtonToolbar>
         <Select
           options={options}
           placeholder={
