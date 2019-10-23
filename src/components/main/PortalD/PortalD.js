@@ -299,6 +299,26 @@ class Portal extends Component {
                     </Tab>
 
                     <Tab eventKey={'Data'} title={'Station Data'}>
+                      <p>{
+                        this.state.allStations ?
+                          `${filteredStations.length} stations selected of
+                    ${this.state.allStations ? this.state.allStations.length : 0} available` :
+                          `Loading station info ... (this may take a couple of minutes)`
+                      }</p>
+                      <p>{`
+              Available stations are filtered by
+              the network they are part of,
+              the variable(s) they observe,
+              and the frequency of obervation.
+              Stations matching selected criteria are displayed on the map.
+              `}</p>
+                      {
+                        unselectedThings &&
+                        <p>You haven't selected any {unselectedThings}.</p>
+                      }
+
+                      <ObservationCounts stations={filteredStations}/>
+
                       <FileFormatSelector
                         value={this.state.fileFormat}
                         onChange={this.handleChangeFileFormat}
@@ -318,29 +338,6 @@ class Portal extends Component {
                         </Button>
                       </ButtonToolbar>
 
-                      <h1>Overview</h1>
-                      <p>{
-                        this.state.allStations ?
-                          `${this.state.allStations.length} stations available.` :
-                          `Loading station info ... (this may take a couple of minutes)`
-                      }</p>
-                      <p>{`
-              Available stations are filtered by
-              the network they are part of,
-              the variable(s) they observe,
-              and the frequency of obervation.
-              Stations matching selected criteria are displayed on the map.
-              `}</p>
-                      {
-                        this.state.allStations &&
-                        <p>{`${filteredStations.length || 'No'} stations match criteria.`}</p>
-                      }
-                      {
-                        unselectedThings &&
-                        <p>You haven't selected any {unselectedThings}.</p>
-                      }
-
-                      <ObservationCounts stations={filteredStations}/>
                     </Tab>
 
                   </Tabs>
