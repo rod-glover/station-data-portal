@@ -2,7 +2,6 @@
   "name": "station-data-portal",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://services.pacificclimate.org/portal-ynwt",
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^3.4.0",
