@@ -4,6 +4,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { Route, Redirect, Switch } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
+import url from 'url';
+import urjJoin from 'url-join';
 
 import logger from '../../../logger';
 import Header from '../Header/Header';
@@ -13,12 +15,6 @@ import PortalE from '../PortalE';
 
 import './App.css';
 
-const getLocation = url => {
-  const a = window.document.createElement('a');
-  a.href = url;
-  return a;
-};
-
 const navSpec = [
   { label: 'Version A', path: 'A', component: PortalD },
   { label: 'Version B', path: 'B', component: PortalE },
@@ -27,9 +23,9 @@ const navSpec = [
 
 export default class App extends Component {
     render() {
-      const basePath = getLocation(process.env.PUBLIC_URL).pathname;
+      const basePath = url.parse(process.env.PUBLIC_URL).pathname || '';
       return (
-        <Router basename={`${basePath}/#`}>
+        <Router basename={urjJoin(basePath, '#')}>
           <div>
             <Navbar fluid>
               <Nav>
