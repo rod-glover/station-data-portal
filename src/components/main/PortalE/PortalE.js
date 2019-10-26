@@ -135,12 +135,8 @@ class Portal extends Component {
       .then(response => this.setState({ allNetworks: response.data }));
     getVariables()
       .then(response => this.setState({ allVariables: response.data }));
-    getStations({
-      params: {
-        // limit: 1000,
-        stride: 10,  // load every 10th station
-      },
-    }).then(response => this.setState({ allStations: response.data }));
+    getStations()
+    .then(response => this.setState({ allStations: response.data }));
   }
 
   stationFilter = memoize(stationFilter);

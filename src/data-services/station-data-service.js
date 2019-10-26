@@ -1,6 +1,9 @@
 import axios from 'axios';
 import urljoin from 'url-join';
-import { flow, tap, identity, map, mapValues, isString } from 'lodash/fp';
+import flow from 'lodash/fp/flow';
+import getOr from 'lodash/fp/getOr';
+import isFinite from 'lodash/fp/isFinite';
+import isString from 'lodash/fp/isString';
 import { mapDeep } from '../utils/fp';
 
 const SDS_URL = process.env.REACT_APP_SDS_URL;
@@ -31,10 +34,21 @@ export function getVariables() {
 }
 
 
+const envVarNumber = (name, fallback) =>
+  flow(
+    getOr(fallback, name),
+    string => +string,
+    value => isFinite(value) ? value : fallback,
+  )(process.env);
+
 export function getStations(config) {
   return axios.get(
     urljoin(SDS_URL, 'stations'),
     {
+      params: {
+        limit: envVarNumber('REACT_APP_STATION_LIMIT', undefined),
+        stride: envVarNumber('REACT_APP_STATION_STRIDE', undefined),
+      },
       transformResponse: axios.defaults.transformResponse.concat(
         mapDeep(transformIso8601Date)
       ),
