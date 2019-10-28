@@ -12,6 +12,14 @@ import find from 'lodash/fp/find';
 import { defaultValue } from '../common';
 import logger from '../../../logger';
 import LocalPropTypes from '../../local-prop-types';
+import capitalize from 'lodash/fp/capitalize';
+import flow from 'lodash/fp/flow';
+import get from 'lodash/fp/get';
+import map from 'lodash/fp/map';
+import tap from 'lodash/fp/tap';
+import sortBy from 'lodash/fp/sortBy';
+import uniqBy from 'lodash/fp/uniqBy';
+
 import css from '../common.module.css';
 
 logger.configure({ active: true });
@@ -40,8 +48,17 @@ const options = [
   },
 ];
 
+const freqToLabel = freq => {
+  const labels = {
+    '1-hourly': 'Hourly',
+    '12-hourly': 'Semi-daily'
+  };
+  return get(freq, labels) || capitalize(freq) || 'Unspecified';
+};
+
 class FrequencySelector extends Component {
   static propTypes = {
+    allHistories: PropTypes.array.isRequired,
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
@@ -56,23 +73,48 @@ class FrequencySelector extends Component {
   componentDidMount() {
     this.setDefault();
     const actions = {
-      getAllOptions: () => options,
+      getAllOptions: this.getOptions,
       selectAll: this.handleClickAll,
       selectNone: this.handleClickNone,
     };
     this.props.onReady(actions);
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.allHistories !== prevProps.allHistories) {
+      this.setDefault();
+    }
+  }
+
   setDefault = () => {
     this.props.onChange(
-      defaultValue(this.props.defaultValueSelector, options)
+      defaultValue(this.props.defaultValueSelector, this.getOptions())
     );
   };
 
-  handleClickAll = () => this.props.onChange(options);
+  makeOptions = memoize(allHistories => (
+    allHistories === null ?
+      [] :
+      flow(
+        tap(v => console.log('### freq allHistories', v)),
+        uniqBy('freq'),
+        tap(v => console.log('### freq uniq', v)),
+        map(history => ({
+          value: history.freq,
+          label: freqToLabel(history.freq),
+        })),
+        sortBy('label'),
+        tap(v => console.log('### freq options', v)),
+      )(allHistories)
+  ));
+
+  getOptions = () => this.makeOptions(this.props.allHistories);
+
+  handleClickAll = () => this.props.onChange(this.getOptions());
 
   handleClickNone = () => this.props.onChange([]);
 
+  // TODO: Fix this
   static valueToLabel = value => {
     const option = find({ value })(options);
     return option ? option.label : value;
@@ -87,7 +129,10 @@ class FrequencySelector extends Component {
           <Button bsSize={'xsmall'} onClick={this.handleClickNone}>None</Button>
         </ButtonToolbar>
         <Select
-          options={options}
+          options={this.getOptions()}
+          placeholder={
+            this.props.allHistories ? 'Select or type to search...' : 'Loading...'
+          }
           {...this.props}
           isMulti
         />

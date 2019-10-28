@@ -13,6 +13,7 @@ import NetworkSelector from '../../selectors/NetworkSelector';
 import {
   getNetworks,
   getStations,
+  getHistories,
   getVariables,
 } from '../../../data-services/station-data-service';
 import { dataDownloadTarget } from '../../../data-services/pdp-data-service';
@@ -80,6 +81,7 @@ class Portal extends Component {
     selectedVariables: [],
     variableActions: {},
 
+    allHistories: null,
     selectedFrequencies: [],
     frequencyActions: {},
 
@@ -133,6 +135,8 @@ class Portal extends Component {
       .then(response => this.setState({ allNetworks: response.data }));
     getVariables()
       .then(response => this.setState({ allVariables: response.data }));
+    getHistories()
+      .then(response => this.setState({ allHistories: response.data }));
     getStations()
     .then(response => this.setState({ allStations: response.data }));
   }
@@ -269,6 +273,7 @@ class Portal extends Component {
                       <Row>
                         <Col lg={12} md={12} sm={12}>
                           <FrequencySelector
+                            allHistories={this.state.allHistories}
                             onReady={this.handleFrequencySelectorReady}
                             value={this.state.selectedFrequencies}
                             onChange={this.handleChangeFrequency}
