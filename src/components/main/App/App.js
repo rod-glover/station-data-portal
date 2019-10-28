@@ -4,6 +4,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { Route, Redirect, Switch } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
+import url from 'url';
+import urjJoin from 'url-join';
 
 import logger from '../../../logger';
 import Header from '../Header/Header';
@@ -21,36 +23,37 @@ const navSpec = [
 
 export default class App extends Component {
     render() {
-        return (
-          <Router basename={'/#'}>
-            <div>
-              <Navbar fluid>
-                <Nav>
+      const basePath = url.parse(process.env.PUBLIC_URL).pathname || '';
+      return (
+        <Router basename={urjJoin(basePath, '#')}>
+          <div>
+            <Navbar fluid>
+              <Nav>
+                {
+                  navSpec.map(({label, path}) => (
+                    <LinkContainer to={`/${path}`}>
+                      <NavItem eventKey={path}>
+                        {label}
+                      </NavItem>
+                    </LinkContainer>
+                  ))
+                }
+              </Nav>
+            </Navbar>
+
+            <Grid fluid className="App">
+                <Header/>
+                <Switch>
                   {
-                    navSpec.map(({label, path}) => (
-                      <LinkContainer to={`/${path}`}>
-                        <NavItem eventKey={path}>
-                          {label}
-                        </NavItem>
-                      </LinkContainer>
+                    navSpec.map(({path, component}) => (
+                      <Route path={`/${path}`} component={component}/>
                     ))
                   }
-                </Nav>
-              </Navbar>
-
-              <Grid fluid className="App">
-                  <Header/>
-                  <Switch>
-                    {
-                      navSpec.map(({path, component}) => (
-                        <Route path={`/${path}`} component={component}/>
-                      ))
-                    }
-                    <Redirect to={'/A'}/>
-                  </Switch>
-              </Grid>
-            </div>
-          </Router>
+                  <Redirect to={'/A'}/>
+                </Switch>
+            </Grid>
+          </div>
+        </Router>
         );
     }
 }

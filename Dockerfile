@@ -1,19 +1,36 @@
-FROM node:10
+# This Dockerfile adapted from https://mherman.org/blog/dockerizing-a-react-app/
+# and Client Explorer Dockerfile.
 
-# Create app directory
-WORKDIR /usr/src/station-data-portal
+# This Dockerfile can (and should) be used to pass through automatically generated
+# version information to the build which is triggered when the image is run.
+# To do this, issue the following build command:
+#
+# docker build --build-arg REACT_APP_CE_CURRENT_VERSION="$(./generate-commitish.sh)" -t <tag> .
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
+# At this moment, Node.js 10.16 LTS is recommended for most users.
+#
+# In future, as we scale up, we may want to use an Alpine base image, which would reduce
+# the size of the image by about an order of magnitude and reduce the attack surface of
+# the image as well.
 
-RUN npm install
-# If you are building your code for production
-# RUN npm install --only=production
+FROM node:10.16
 
-# Bundle app source
-COPY . .
+ADD . /app
+WORKDIR /app
 
-EXPOSE 3000
-CMD [ "npm", "start" ]
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package.json /app/package.json
+
+RUN npm install --quiet
+RUN npm install -g serve
+COPY . /app
+
+EXPOSE 8080
+
+# Move the build arg REACT_APP_VERSION into an
+# environment variable of the same name, for consumption
+# by the npm build process in ./entrypoint.sh
+ARG REACT_APP_VERSION
+ENV REACT_APP_VERSION $REACT_APP_VERSION
+
+CMD ["/bin/bash", "./entrypoint.sh"]
