@@ -13,6 +13,7 @@ import { defaultValue } from '../common';
 import logger from '../../../logger';
 import LocalPropTypes from '../../local-prop-types';
 import capitalize from 'lodash/fp/capitalize';
+import flatten from 'lodash/fp/flatten';
 import flow from 'lodash/fp/flow';
 import get from 'lodash/fp/get';
 import map from 'lodash/fp/map';
@@ -25,40 +26,9 @@ import css from '../common.module.css';
 logger.configure({ active: true });
 
 
-const options = [
-  {
-    label: 'Hourly',
-    value: '1-hourly',
-  },
-  {
-    label: 'Daily',
-    value: 'daily',
-  },
-  {
-    label: 'Semi-daily',
-    value: '12-hourly',
-  },
-  {
-    label: 'Irregular',
-    value: 'irregular',
-  },
-  {
-    label: 'Unspecified',
-    value: '',
-  },
-];
-
-const freqToLabel = freq => {
-  const labels = {
-    '1-hourly': 'Hourly',
-    '12-hourly': 'Semi-daily'
-  };
-  return get(freq, labels) || capitalize(freq) || 'Unspecified';
-};
-
 class FrequencySelector extends Component {
   static propTypes = {
-    allHistories: PropTypes.array.isRequired,
+    allStations: PropTypes.array.isRequired,
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
@@ -81,7 +51,7 @@ class FrequencySelector extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props.allHistories !== prevProps.allHistories) {
+    if (this.props.allStations !== prevProps.allStations) {
       this.setDefault();
     }
   }
@@ -92,33 +62,34 @@ class FrequencySelector extends Component {
     );
   };
 
-  makeOptions = memoize(allHistories => (
-    allHistories === null ?
+  static valueToLabel = freq => {
+    const labels = {
+      '1-hourly': 'Hourly',
+      '12-hourly': 'Semi-daily'
+    };
+    return get(freq, labels) || capitalize(freq) || 'Unspecified';
+  };
+
+  makeOptions = memoize(allStations => (
+    allStations === null ?
       [] :
       flow(
-        tap(v => console.log('### freq allHistories', v)),
+        map('histories'),
+        flatten,
         uniqBy('freq'),
-        tap(v => console.log('### freq uniq', v)),
         map(history => ({
           value: history.freq,
-          label: freqToLabel(history.freq),
+          label: FrequencySelector.valueToLabel(history.freq),
         })),
         sortBy('label'),
-        tap(v => console.log('### freq options', v)),
-      )(allHistories)
+      )(allStations)
   ));
 
-  getOptions = () => this.makeOptions(this.props.allHistories);
+  getOptions = () => this.makeOptions(this.props.allStations);
 
   handleClickAll = () => this.props.onChange(this.getOptions());
 
   handleClickNone = () => this.props.onChange([]);
-
-  // TODO: Fix this
-  static valueToLabel = value => {
-    const option = find({ value })(options);
-    return option ? option.label : value;
-  };
 
   render() {
     return (
@@ -131,7 +102,7 @@ class FrequencySelector extends Component {
         <Select
           options={this.getOptions()}
           placeholder={
-            this.props.allHistories ? 'Select or type to search...' : 'Loading...'
+            this.props.allStations ? 'Select or type to search...' : 'Loading...'
           }
           {...this.props}
           isMulti
