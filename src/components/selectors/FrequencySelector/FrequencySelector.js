@@ -12,36 +12,23 @@ import find from 'lodash/fp/find';
 import { defaultValue } from '../common';
 import logger from '../../../logger';
 import LocalPropTypes from '../../local-prop-types';
+import capitalize from 'lodash/fp/capitalize';
+import flatten from 'lodash/fp/flatten';
+import flow from 'lodash/fp/flow';
+import get from 'lodash/fp/get';
+import map from 'lodash/fp/map';
+import tap from 'lodash/fp/tap';
+import sortBy from 'lodash/fp/sortBy';
+import uniqBy from 'lodash/fp/uniqBy';
+
 import css from '../common.module.css';
 
 logger.configure({ active: true });
 
 
-const options = [
-  {
-    label: 'Hourly',
-    value: '1-hourly',
-  },
-  {
-    label: 'Daily',
-    value: 'daily',
-  },
-  {
-    label: 'Semi-daily',
-    value: '12-hourly',
-  },
-  {
-    label: 'Irregular',
-    value: 'irregular',
-  },
-  {
-    label: 'Unspecified',
-    value: '',
-  },
-];
-
 class FrequencySelector extends Component {
   static propTypes = {
+    allStations: PropTypes.array.isRequired,
     onReady: PropTypes.func.isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
@@ -56,27 +43,53 @@ class FrequencySelector extends Component {
   componentDidMount() {
     this.setDefault();
     const actions = {
-      getAllOptions: () => options,
+      getAllOptions: this.getOptions,
       selectAll: this.handleClickAll,
       selectNone: this.handleClickNone,
     };
     this.props.onReady(actions);
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.allStations !== prevProps.allStations) {
+      this.setDefault();
+    }
+  }
+
   setDefault = () => {
     this.props.onChange(
-      defaultValue(this.props.defaultValueSelector, options)
+      defaultValue(this.props.defaultValueSelector, this.getOptions())
     );
   };
 
-  handleClickAll = () => this.props.onChange(options);
+  static valueToLabel = freq => {
+    const labels = {
+      '1-hourly': 'Hourly',
+      '12-hourly': 'Semi-daily'
+    };
+    return get(freq, labels) || capitalize(freq) || 'Unspecified';
+  };
+
+  makeOptions = memoize(allStations => (
+    allStations === null ?
+      [] :
+      flow(
+        map('histories'),
+        flatten,
+        uniqBy('freq'),
+        map(history => ({
+          value: history.freq,
+          label: FrequencySelector.valueToLabel(history.freq),
+        })),
+        sortBy('label'),
+      )(allStations)
+  ));
+
+  getOptions = () => this.makeOptions(this.props.allStations);
+
+  handleClickAll = () => this.props.onChange(this.getOptions());
 
   handleClickNone = () => this.props.onChange([]);
-
-  static valueToLabel = value => {
-    const option = find({ value })(options);
-    return option ? option.label : value;
-  };
 
   render() {
     return (
@@ -87,7 +100,10 @@ class FrequencySelector extends Component {
           <Button bsSize={'xsmall'} onClick={this.handleClickNone}>None</Button>
         </ButtonToolbar>
         <Select
-          options={options}
+          options={this.getOptions()}
+          placeholder={
+            this.props.allStations ? 'Select or type to search...' : 'Loading...'
+          }
           {...this.props}
           isMulti
         />

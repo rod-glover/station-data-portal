@@ -70,7 +70,6 @@ class NetworkSelector extends Component {
     allNetworks === null ?
       [] :
       flow(
-        tap(allNetworks => console.log('allNetworks', allNetworks)),
         map(
           network => ({
             value: network,
@@ -79,7 +78,6 @@ class NetworkSelector extends Component {
           })
         ),
         sortBy('label'),
-        tap(options => console.log('options', options)),
       )(allNetworks)
   ));
 

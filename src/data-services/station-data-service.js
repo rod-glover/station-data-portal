@@ -34,6 +34,11 @@ export function getVariables() {
 }
 
 
+export function getHistories() {
+  return axios.get(urljoin(SDS_URL, 'histories'));
+}
+
+
 const envVarNumber = (name, fallback) =>
   flow(
     getOr(fallback, name),
