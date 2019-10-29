@@ -18,8 +18,11 @@ class Header extends Component {
                         />
                     </a>
                 </Col>
-                <Col lg={9}>
+                <Col lg={7}>
                     <h1>YNWT Station Data Portal</h1>
+                </Col>
+                <Col lg={2} className='text-right'>
+                  <small>Version: {process.env.REACT_APP_VERSION}</small>
                 </Col>
             </Row>
         );
