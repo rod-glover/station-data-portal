@@ -47,6 +47,14 @@ import LayerControlledFeatureGroup from '../LayerControlledFeatureGroup';
 
 logger.configure({ active: true });
 
+const initialViewport = {
+  center: {
+    lat: 65.0,
+    lng: -120
+  },
+  zoom: 2
+};
+
 export default class StationMap extends Component {
   static propTypes = {
     stations: PropTypes.array.isRequired,
@@ -145,7 +153,7 @@ export default class StationMap extends Component {
     const allowGeometryDraw = true || this.state.geometryLayers.length === 0;
 
     return (
-      <BCBaseMap viewport={BCBaseMap.initialViewport}>
+      <BCBaseMap viewport={initialViewport}>
         <LayerControlledFeatureGroup
           layers={this.state.geometryLayers}
         >
