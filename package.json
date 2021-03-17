@@ -25,6 +25,7 @@
     "react-scripts": "3.0.1",
     "react-select": "^2.3.0",
     "react-table": "^6.10.3",
+    "serve": "^11.3.2",
     "url-join": "^4.0.0"
   },
   "devDependencies": {
@@ -36,11 +37,5 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "reinstall": "rm -rf ./node_modules; npm install"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  }
 }
