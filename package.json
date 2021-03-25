@@ -25,6 +25,7 @@
     "react-scripts": "3.0.1",
     "react-select": "^2.3.0",
     "react-table": "^6.10.3",
+    "serve": "^11.3.2",
     "url-join": "^4.0.0"
   },
   "devDependencies": {
@@ -37,10 +38,16 @@
     "eject": "react-scripts eject",
     "reinstall": "rm -rf ./node_modules; npm install"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
