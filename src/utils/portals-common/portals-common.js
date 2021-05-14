@@ -11,7 +11,7 @@ import { isPointInPolygonWn } from '../geometry-algorithms';
 
 
 const checkGeoJSONPolygon = geometry => {
-  if (geometry['type'] !== 'Polygon') {
+  if (geometry['type'] !== 'MultiPolygon') {
     throw new Error(`Invalid geometry type: ${geometry['type']}`)
   }
 };
@@ -107,14 +107,13 @@ export const stationFilter = (
       if (!area) {
         return true;
       }
-      // TODO: Handle more generalized geometry?
-      //  See https://github.com/pacificclimate/station-data-portal/issues/21
-      checkGeoJSONPolygon(area.geometry);
-      // Dumbest possible version: Only test the first vertex list in the
-      // polygon.
-      return isPointInGeoJSONPolygon(
-        area.geometry.coordinates[0],
-        [station.histories[0].lon, station.histories[0].lat])
+      //area will always be a geoJSON MultiPolygon (even if there's only one polygon)
+      checkGeoJSONPolygon(area);
+
+      //return true if the station is in any selected polygon
+      return some(poly => isPointInGeoJSONPolygon(poly[0],
+            [station.histories[0].lon, station.histories[0].lat] ))(area.coordinates);
+
     }),
   )(allStations);
 };

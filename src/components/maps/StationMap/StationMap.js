@@ -38,7 +38,7 @@ import { BCBaseMap } from 'pcic-react-leaflet-components';
 import { FeatureGroup, LayerGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import StationMarkers from '../StationMarkers';
-import { geoJSONToLeafletLayers } from '../../../utils/geoJSON-leaflet';
+import { geoJSONToLeafletLayers, layersToGeoJSONMultipolygon } from '../../../utils/geoJSON-leaflet';
 
 import logger from '../../../logger';
 
@@ -70,18 +70,8 @@ export default class StationMap extends Component {
 // Handlers for area selection. Converts area to GeoJSON.
 
   layersToArea = (layers) => {
-    // const area = layersToGeoJSON('GeometryCollection', layers);
-    // const area = layersToGeoJSON('FeatureCollection', layers);
-    // TODO: Verify assertion below (copied from CE, which has a different be).
-    // TODO: Handle more general geometry?
-    //  See https://github.com/pacificclimate/station-data-portal/pull/18/files#diff-7171e91138869d2b0e1de40b6ea7e584R64-R75
-    // The thing that receives this GeoJSON doesn't like `FeatureCollection`s
-    // or `GeometryCollection`s.
-    // Right now we are therefore only updating with the first Feature, i.e.,
-    // first layer. This is undesirable. Best would be to fix the receiver
-    // to handle feature selections; next
-    const layer0 = layers[0];
-    return layer0 && layer0.toGeoJSON();
+    //convert one or more geometry layer to a geoJSON Multipolygon
+    return layers && layersToGeoJSONMultipolygon(layers);
   };
 
   onSetArea = () => {
