@@ -92,7 +92,8 @@ export function layersToGeoJSON(collectionType, layers) {
 // a single selected polygon, the area should be a Multipolygon
 export function layersToGeoJSONMultipolygon(layers) {
     if (layers.length === 0) {
-        return {};
+        // just cleared an existing selection.
+        return undefined;
     }
     else if (layers.length === 1) {
         return  {
