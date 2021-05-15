@@ -34,7 +34,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import without from 'lodash/fp/without';
 
-import { BCBaseMap } from 'pcic-react-leaflet-components';
+import { YNWTBaseMap } from 'pcic-react-leaflet-components';
 import { FeatureGroup, LayerGroup } from 'react-leaflet';
 import { EditControl } from 'react-leaflet-draw';
 import StationMarkers from '../StationMarkers';
@@ -52,7 +52,7 @@ const initialViewport = {
     lat: 65.0,
     lng: -120
   },
-  zoom: 2
+  zoom: 6
 };
 
 export default class StationMap extends Component {
@@ -153,7 +153,7 @@ export default class StationMap extends Component {
     const allowGeometryDraw = true || this.state.geometryLayers.length === 0;
 
     return (
-      <BCBaseMap viewport={initialViewport}>
+      <YNWTBaseMap viewport={initialViewport}>
         <LayerControlledFeatureGroup
           layers={this.state.geometryLayers}
         >
@@ -185,7 +185,7 @@ export default class StationMap extends Component {
             allVariables={this.props.allVariables}
           />
         </LayerGroup>
-      </BCBaseMap>
+      </YNWTBaseMap>
     );
   }
 }

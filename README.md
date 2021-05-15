@@ -197,7 +197,6 @@ numbers. In this example, we will tag with version 1.2.3.
 1. Tag the image:
 
    ```bash
-   Tag the image
    $ docker tag 1040e7f07e5d docker-registry01.pcic.uvic.ca:5000/station-data-portal:1.2.3
    ```
 
