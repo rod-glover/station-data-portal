@@ -14,7 +14,11 @@ jobs:
       with:
         node-version: 14
     - name: Node.js Test Suite
+      # Note CI=false is required to prevent script from terminating with error
+      # on warnings. This is the intended behaviour of `build` and the
+      # recommended solution, despite how stupid it seems:
+      # https://github.com/facebook/create-react-app/issues/3657
       run: |
         npm install
-        npm run build
+        CI=false npm run build
         npm test
