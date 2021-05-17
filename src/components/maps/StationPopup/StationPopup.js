@@ -19,7 +19,7 @@ const formatDate = d => d ? d.toISOString().substr(0,10) : 'unknown';
 class StationPopup extends Component {
   static propTypes = {
     station: PropTypes.object.isRequired,
-    network: PropTypes.array.isRequired,
+    network: PropTypes.object.isRequired,
     variables: PropTypes.array.isRequired,
   };
 
