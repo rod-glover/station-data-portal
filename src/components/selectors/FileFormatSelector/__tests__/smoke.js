@@ -1,11 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import FileFormatSelector from '../FileFormatSelector';
-
-jest.mock('../../../data-services/weather-anomaly-data-service');
+import noop from 'lodash/noop';
 
 it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<FileFormatSelector/>, div);
+    ReactDOM.render(
+      <FileFormatSelector
+        onChange={noop}
+      />,
+      div
+    );
 });
 
