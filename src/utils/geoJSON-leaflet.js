@@ -98,12 +98,14 @@ export function layersToGeoJSONMultipolygon(layers) {
     else if (layers.length === 1) {
         return  {
             type: 'MultiPolygon',
+            properties: geoJSONProperties,
             coordinates: [layers[0].toGeoJSON().geometry.coordinates]
         };
     }
     else {
         return {
             type: 'MultiPolygon',
+            properties: geoJSONProperties,
             coordinates: layers.map(layer => layer.toGeoJSON().geometry.coordinates)
         };
     }
