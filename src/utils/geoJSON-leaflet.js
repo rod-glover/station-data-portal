@@ -95,18 +95,16 @@ export function layersToGeoJSONMultipolygon(layers) {
         // just cleared an existing selection.
         return undefined;
     }
-    else if (layers.length === 1) {
+    if (layers.length === 1) {
         return  {
             type: 'MultiPolygon',
             properties: geoJSONProperties,
             coordinates: [layers[0].toGeoJSON().geometry.coordinates]
         };
     }
-    else {
-        return {
-            type: 'MultiPolygon',
-            properties: geoJSONProperties,
-            coordinates: layers.map(layer => layer.toGeoJSON().geometry.coordinates)
+    return {
+        type: 'MultiPolygon',
+        properties: geoJSONProperties,
+        coordinates: layers.map(layer => layer.toGeoJSON().geometry.coordinates)
         };
-    }
 }
