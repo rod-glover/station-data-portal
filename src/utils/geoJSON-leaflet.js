@@ -86,3 +86,25 @@ export function layersToGeoJSON(collectionType, layers) {
 
   throw new Error(`Invalid GeoJSON collection type: '${collectionType}'`);
 }
+
+// creates a geoJSON Multipolygon from selection geometry
+// the PCDS backend wants a WKT polygon, so even when the user draws only
+// a single selected polygon, the area should be a Multipolygon
+export function layersToGeoJSONMultipolygon(layers) {
+    if (layers.length === 0) {
+        // just cleared an existing selection.
+        return undefined;
+    }
+    if (layers.length === 1) {
+        return  {
+            type: 'MultiPolygon',
+            properties: geoJSONProperties,
+            coordinates: [layers[0].toGeoJSON().geometry.coordinates]
+        };
+    }
+    return {
+        type: 'MultiPolygon',
+        properties: geoJSONProperties,
+        coordinates: layers.map(layer => layer.toGeoJSON().geometry.coordinates)
+        };
+}
